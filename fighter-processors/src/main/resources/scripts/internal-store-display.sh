@@ -37,4 +37,4 @@ if [ -z $APPID ]; then
     exit 1
 fi
 
-watch -n 1 "cat /tmp/XKE-KSTREAM-$APPID-TABLE.txt"
+watch -n 0.2 "cat /tmp/XKE-KSTREAM-$APPID-TABLE.txt"
