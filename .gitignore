@@ -1,0 +1,27 @@
+
+### Intellij ###
+.idea
+*.iml
+*.iws
+/out/
+.idea_modules/
+
+### SBT ###
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+
+### Scala ###
+*.class
+*.log
+
+
+### project ###
+*resources/avro-exemples/
