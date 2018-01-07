@@ -97,7 +97,6 @@ services:
   registry:
     image: confluentinc/cp-schema-registry:4.0.0
     hostname: registry
-    #container_name: arcade-registry
     depends_on:
       - kafka-1
       - kafka-2
@@ -146,7 +145,6 @@ services:
   actors:
     image: fighter-actors:0.1.0
     hostname: actors
-    #container_name: arcade-actors
     depends_on:
           - registry
     ports:
