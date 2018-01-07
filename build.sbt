@@ -21,6 +21,8 @@ val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.4"
 val kafkaVersion = "1.0.0"
 val cpVerison = "4.0.0"
+val jettyVersion = "9.2.22.v20170606"
+val jacksonVersion = "2.9.1"
 
 lazy val common = Seq(
 
@@ -58,6 +60,7 @@ lazy val `fighter-processors` = project
   .settings(common: _*)
   .settings(kafkaDependencies: _*)
   .settings(avroGeneratorSettings: _*)
+  .settings(serverDependencies: _*)
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-processors") : _*)
 
@@ -100,13 +103,23 @@ lazy val mathDependencies = Seq(
   )
 )
 
+lazy val serverDependencies = Seq(
+  libraryDependencies ++= Seq(
+    "org.eclipse.jetty" % "jetty-server" % jettyVersion,
+    "org.eclipse.jetty" % "jetty-servlet" % jettyVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
+  )
+)
+
 lazy val dockerSettings = Seq(
 
   version in Docker := version.value,
 
   dockerBaseImage in Docker := "java:8-jdk-alpine",
 
-  maintainer in Docker := "Loïc DIVAD <ldivad@xebia.fr>"
+  maintainer in Docker := "Loïc DIVAD <ldivad@xebia.fr>",
+
+  mappings in Docker += (baseDirectory.value / "/src/main/resources/") -> "resources"
 
 )
 
