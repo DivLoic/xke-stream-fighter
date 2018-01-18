@@ -10,6 +10,7 @@ import fr.xebia.ldi.fighter.entity.FieldEntity.District
 import fr.xebia.ldi.fighter.schema.{Arena, Player, Round}
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.joda.time.DateTime
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.rng.Seed
@@ -49,7 +50,7 @@ case class Terminal(id: Int, location: ArenaEntity, publisher: ActorRef) extends
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, District)
+    val round = Round(arena.id, id, winner, looser, District, DateTime.now().getMillis)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))

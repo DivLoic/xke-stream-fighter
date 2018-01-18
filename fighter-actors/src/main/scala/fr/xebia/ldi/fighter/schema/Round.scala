@@ -11,6 +11,7 @@ case class Round(arena: Int,
                  winner: Player,
                  looser: Player,
                  field: Value,
+                 timestamp: Long,
                  id: Option[String] = None)
 
 case object Round {
