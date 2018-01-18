@@ -1,0 +1,146 @@
+[
+  {
+    "type": "record",
+    "name": "Arena",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "terminals",
+        "type": "int"
+      },
+      {
+        "name": "location",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Player",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "life",
+        "type": "int"
+      },
+      {
+        "name": "combo",
+        "type": "int"
+      },
+      {
+        "name": "fatal_hit",
+        "type": [
+          "null",
+          "double"
+        ],
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "FieldEntity",
+    "namespace": "fr.xebia.ldi.fighter.entity",
+    "type": "enum",
+    "symbols": [
+      "Castle",
+      "District",
+      "Desert",
+      "River",
+      "Distillery"
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Round",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "arena",
+        "type": "int"
+      },
+      {
+        "name": "terminal",
+        "type": "int"
+      },
+      {
+        "name": "winner",
+        "type": "Player"
+      },
+      {
+        "name": "looser",
+        "type": "Player"
+      },
+      {
+        "name": "field",
+        "type": "fr.xebia.ldi.fighter.entity.FieldEntity"
+      },
+      {
+        "name": "timestamp",
+        "type": "long"
+      },
+      {
+        "name": "id",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Victory",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "character",
+        "type": "Player"
+      },
+      {
+        "name": "arena",
+        "type": "Arena"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "VictoriesCount",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "window_start",
+        "type": "long"
+      },
+      {
+        "name": "character",
+        "type": "string"
+      },
+      {
+        "name": "concept",
+        "type": "string"
+      },
+      {
+        "name": "victories",
+        "type": "long"
+      }
+    ]
+  }
+
+]
