@@ -44,12 +44,9 @@
         "type": "int"
       },
       {
-        "name": "fatal_hit",
-        "type": [
-          "null",
-          "double"
-        ],
-        "default": null
+        "name": "fatal",
+        "type": "boolean",
+        "default": false
       }
     ]
   },

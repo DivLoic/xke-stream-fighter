@@ -26,7 +26,7 @@ val jacksonVersion = "2.9.1"
 
 lazy val common = Seq(
 
-  version := "0.1.0",
+  version := "0.1.0-SNAPSHOT",
 
   isSnapshot := false,
 
@@ -60,7 +60,6 @@ lazy val `fighter-processors` = project
   .settings(common: _*)
   .settings(kafkaDependencies: _*)
   .settings(avroGeneratorSettings: _*)
-  .settings(serverDependencies: _*)
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-processors") : _*)
 
@@ -103,13 +102,13 @@ lazy val mathDependencies = Seq(
   )
 )
 
-lazy val serverDependencies = Seq(
+/*lazy val serverDependencies = Seq(
   libraryDependencies ++= Seq(
     "org.eclipse.jetty" % "jetty-server" % jettyVersion,
     "org.eclipse.jetty" % "jetty-servlet" % jettyVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
   )
-)
+)*/
 
 lazy val dockerSettings = Seq(
 
