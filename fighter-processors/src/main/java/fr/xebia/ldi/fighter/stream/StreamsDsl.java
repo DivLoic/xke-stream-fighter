@@ -97,6 +97,13 @@ public class StreamsDsl {
             e.printStackTrace();
         }
 
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(() -> {
+                    kafkaStreams.close();
+                    kafkaStreams.cleanUp();
+                })
+        );
+
     }
 
 }
