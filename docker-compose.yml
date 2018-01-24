@@ -116,9 +116,9 @@ services:
       KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
       KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,DELETE,OPTIONS'
 
-  landoop-topics:
+  landoop:
     image: landoop/kafka-topics-ui:latest
-    hostname: landoop-topics
+    hostname: landoop
     depends_on:
       - rest-proxy
     ports:
@@ -126,24 +126,23 @@ services:
     environment:
       KAFKA_REST_PROXY_URL: http://rest-proxy:8082
 
-  landoop-schemas:
-    image: landoop/schema-registry-ui:latest
-    hostname: landoop-schemas
-    depends_on:
-      - rest-proxy
-    ports:
-      - "8801:8000"
-    environment:
-      SCHEMAREGISTRY_URL: http://registry:8081
-
   actors:
-    image: fighter-actors:0.1.0
+    image: fighter-actors:0.1.0-SNAPSHOT
     hostname: actors
     depends_on:
-          - registry
-    ports:
-          - "4200:4200"
+      - registry
     environment:
       KAFKA_BROKERS: kafka-1:9091,kafka-2:9092,kafka-3:9093
       SCHEMA_REGISTRY: http://registry:8081/
-      TOPIC_LIST: "ARENAS:1:3,ROUNDS:6:2,RESULTS:6:2,TOKKENS:1:3"
+      TOPIC_LIST: "ARENAS:1:3,ROUNDS:3:2,RESULTS:1:3,TOKKENS:1:3"
+
+#  processors:
+#    image: fighter-processors:0.1.0-SNAPSHOT
+#    entrypoint: bin/streams-dsl
+#    hostname: processors
+#    depends_on:
+#      - actors
+#    environment:
+#      APPID: XKE-KSTREAM-DSL
+#      SCHEMA_REGISTRY: http://registry:8081/
+#      KAFKA_BROKERS: kafka-1:9091,kafka-2:9092,kafka-3:9093
