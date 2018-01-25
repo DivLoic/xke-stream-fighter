@@ -28,7 +28,6 @@ object Admin {
       .map(t => new NewTopic(t.head, t(1).toInt, t(2).toShort))
       .toList
 
-
     client.createTopics(topics.asJava)
   }
 

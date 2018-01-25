@@ -48,7 +48,7 @@ public class ProcessVictory implements Processor {
             Long total = keyValue.value + 1L;
             this.victoryStore.put(groupKey, total, computeWindowStart(keyValue.key));
         } else {
-            this.victoryStore.put(groupKey, 1L, computeWindowStart(DateTime.now().getMillis()));
+            this.victoryStore.put(groupKey, 1L, computeWindowStart(fifteenSecAgo()));
         }
 
     }

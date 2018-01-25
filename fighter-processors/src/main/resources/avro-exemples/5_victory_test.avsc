@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "Victory",
+  "namespace": "fr.xebia.ldi.fighter.schema",
+  "fields": [
+    {
+      "name": "character",
+      "type": "Player"
+    },
+    {
+      "name": "arena",
+      "type": "Arena"
+    }
+  ]
+}

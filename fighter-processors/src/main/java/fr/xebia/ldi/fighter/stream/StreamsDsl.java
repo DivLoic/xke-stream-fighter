@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
+import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.extractArenaId;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 
@@ -66,7 +67,7 @@ public class StreamsDsl {
 
         rounds
 
-                .filter((String key, Round round) -> round.getWinner().getCombo() > 3)
+                .filter((String key, Round round) -> round.getGame().equals(StreetFighter))
 
                 .map((String key, Round round) -> new KeyValue<>(extractArenaId(key), round.getWinner()))
 
@@ -104,6 +105,7 @@ public class StreamsDsl {
                 })
         );
 
+//        System.out.println(kafkaStreams.localThreadsMetadata());
     }
 
 }

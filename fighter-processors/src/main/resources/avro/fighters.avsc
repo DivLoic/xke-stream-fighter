@@ -63,6 +63,17 @@
     ]
   },
   {
+    "name": "GameEntity",
+    "namespace": "fr.xebia.ldi.fighter.entity",
+    "type": "enum",
+    "symbols": [
+      "Takken",
+      "SoulCalibur",
+      "StreetFighter",
+      "KingOfFighters"
+    ]
+  },
+  {
     "type": "record",
     "name": "Round",
     "namespace": "fr.xebia.ldi.fighter.schema",
@@ -86,6 +97,10 @@
       {
         "name": "field",
         "type": "fr.xebia.ldi.fighter.entity.FieldEntity"
+      },
+      {
+        "name": "game",
+        "type": "fr.xebia.ldi.fighter.entity.GameEntity"
       },
       {
         "name": "timestamp",

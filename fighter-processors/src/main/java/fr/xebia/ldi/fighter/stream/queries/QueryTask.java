@@ -53,7 +53,7 @@ public class QueryTask extends TimerTask {
     @Override
     public void run() {
         long now = System.currentTimeMillis();
-        long since = now - TimeUnit.SECONDS.toMillis(15) - 999;
+        long since = now - TimeUnit.SECONDS.toMillis(15);
 
         String[] lines = generateWindowKeys("PRO")
                 .map((GenericRecord key) -> querying(key, since, now, windowStore))

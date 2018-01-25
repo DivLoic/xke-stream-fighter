@@ -1,0 +1,12 @@
+{
+  "name": "FieldEntity",
+  "namespace": "fr.xebia.ldi.fighter.entity",
+  "type": "enum",
+  "symbols": [
+    "Castle",
+    "District",
+    "Desert",
+    "River",
+    "Distillery"
+  ]
+}

@@ -17,7 +17,12 @@ import java.util.stream.Stream;
  */
 public class Parsing {
 
-    public static final String[] characters = {"Ken", "Ryu", "Geki", "Chun-Li", "Akuma", "Sakura", "Dhalsim", "Blair"};
+    private static final String[] characters = {
+            "Ken", "Ryu", "Geki", "Chun-Li", "Akuma", "Sakura", "Dhalsim", "Blair",
+            "Jin", "Asuka", "Emilie", "Kazuya", // takken queries
+            "Mai", "Ramon", "Nelson", "Vanessa", // kof queries
+            "Kilik", "Ivy", "Siegfried", "Nightmare" // soul queries
+    };
 
     private static final Schema characterConceptKey = SchemaBuilder.builder()
             .record("CharacterConceptKey")

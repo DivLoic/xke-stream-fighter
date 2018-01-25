@@ -1,0 +1,27 @@
+{
+  "type": "record",
+  "name": "Player",
+  "namespace": "fr.xebia.ldi.fighter.schema",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "life",
+      "type": "int"
+    },
+    {
+      "name": "combo",
+      "type": "int"
+    },
+    {
+      "name": "fatal_hit",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null
+    }
+  ]
+}

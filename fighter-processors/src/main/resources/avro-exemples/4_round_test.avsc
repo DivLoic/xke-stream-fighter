@@ -1,0 +1,35 @@
+{
+  "type": "record",
+  "name": "Round",
+  "namespace": "fr.xebia.ldi.fighter.schema",
+  "fields": [
+    {
+      "name": "arena",
+      "type": "int"
+    },
+    {
+      "name": "terminal",
+      "type": "int"
+    },
+    {
+      "name": "winner",
+      "type": "Player"
+    },
+    {
+      "name": "looser",
+      "type": "Player"
+    },
+    {
+      "name": "field",
+      "type": "FieldEntity"
+    },
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

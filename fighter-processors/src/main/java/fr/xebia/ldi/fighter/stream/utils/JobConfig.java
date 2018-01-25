@@ -18,8 +18,8 @@ public class JobConfig {
         Properties prop = new Properties();
         prop.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString("kafka-clients.bootstrap.servers"));
         prop.put(StreamsConfig.APPLICATION_ID_CONFIG, config.getString("applicationid"));
-        prop.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
         prop.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
+        prop.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
         prop.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
         prop.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
                 config.getString("kafka-clients.schema.registry.url"));

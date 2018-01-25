@@ -1,0 +1,27 @@
+{
+  "type": "record",
+  "name": "Arena",
+  "namespace": "fr.xebia.ldi.fighter.schema",
+  "fields": [
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "terminals",
+      "type": "int"
+    },
+    {
+      "name": "location",
+      "type": "string"
+    }
+  ]
+}

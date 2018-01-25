@@ -9,10 +9,10 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.{Done, NotUsed}
 import com.typesafe.config.ConfigFactory
+import fr.xebia.ldi.fighter.actor.utils.AvroSerde
 import fr.xebia.ldi.fighter.entity.ArenaEntity
 import fr.xebia.ldi.fighter.entity.ArenaEntity._
-import fr.xebia.ldi.fighter.schema.Arena
-import fr.xebia.ldi.fighter.actor.utils.{Admin, AvroSerde}
+import fr.xebia.ldi.fighter.schema._
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
@@ -48,7 +48,7 @@ object Play extends App {
       val producerSettings: ProducerSettings[String, GenericRecord] =
         ProducerSettings(system, new StringSerializer(), localGeneriAvroSerde.serializer())
 
-      Admin.topicsCreation(conf, producerSettings.properties)
+      // Admin.topicsCreation(conf, producerSettings.properties)
 
       val doneRooms: Future[Done] = Source.fromIterator(() => {
         ArenaEntity.Arenas.map(Arena(_))
@@ -70,13 +70,15 @@ object Play extends App {
 
         whenStarting {
           executors = executors ++ Seq(
-            "T0" -> Terminal.actors(0, `6E-ARR`, producerRef),
-            "T1" -> Terminal.actors(1, `9E-ARR`, producerRef),
-            "T2" -> Terminal.actors(2, `15E-ARR`, producerRef),
-            "T3" -> Terminal.actors(3, `16E-ARR`, producerRef),
-            "T4" -> Terminal.actors(4, DAKAR, producerRef),
-            "T5" -> Terminal.actors(5, NAMUR, producerRef),
-            "T6" -> Terminal.actors(6, ZURICH, producerRef))
+            "T0" -> Terminal.actors(0, TakkenGame, `6E-ARR`, producerRef),
+            "T1" -> Terminal.actors(1, SoulCaliburGame, `6E-ARR`, producerRef),
+            "T2" -> Terminal.actors(2, StreetFighterGame, `6E-ARR`, producerRef),
+            "T3" -> Terminal.actors(3, KingOfFigtersGame, `9E-ARR`, producerRef),
+            "T4" -> Terminal.actors(4, StreetFighterGame, `15E-ARR`, producerRef),
+            "T5" -> Terminal.actors(5, KingOfFigtersGame, `16E-ARR`, producerRef),
+            "T6" -> Terminal.actors(6, StreetFighterGame, DAKAR, producerRef),
+            "T7" -> Terminal.actors(7, StreetFighterGame, NAMUR, producerRef),
+            "T8" -> Terminal.actors(8, StreetFighterGame, ZURICH, producerRef))
         }
 
         become {
@@ -93,6 +95,9 @@ object Play extends App {
       master ! "T4"
       master ! "T5"
       master ! "T6"
+      master ! "T7"
+      master ! "T8"
+      master ! "T9"
 
   }
 

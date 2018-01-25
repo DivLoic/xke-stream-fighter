@@ -7,7 +7,7 @@ import breeze.stats.distributions.Gaussian
 import fr.xebia.ldi.fighter.entity.ArenaEntity.ArenaEntity
 import fr.xebia.ldi.fighter.entity.CharacterEntity.CharacterEntity
 import fr.xebia.ldi.fighter.entity.FieldEntity.District
-import fr.xebia.ldi.fighter.schema.{Arena, Player, Round}
+import fr.xebia.ldi.fighter.schema.{Arena, Player, Round, VideoGame}
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.joda.time.DateTime
@@ -22,7 +22,7 @@ import scala.concurrent.duration._
 /**
   * Created by loicmdivad.
   */
-case class Terminal(id: Int, location: ArenaEntity, publisher: ActorRef) extends Actor {
+case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: ActorRef) extends Actor {
 
   val arena: Arena = Arena(location)
   val default: Gen.Parameters = Gen.Parameters.default.withSize(3000)
@@ -30,7 +30,7 @@ case class Terminal(id: Int, location: ArenaEntity, publisher: ActorRef) extends
 
   val selector: Gen[Player] = for {
     dist <-  Gen.oneOf(gaussians)
-    character <- arbitrary[CharacterEntity]
+    character <- arbitrary[CharacterEntity](game.genarator)
     combos <- Gen.chooseNum(0, 8)
     hits <- Gen.chooseNum(0, 3)
   } yield Player(character, score(dist), combos, hits)
@@ -50,7 +50,7 @@ case class Terminal(id: Int, location: ArenaEntity, publisher: ActorRef) extends
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, District, DateTime.now().getMillis)
+    val round = Round(arena.id, id, winner, looser, game.label, District, DateTime.now().getMillis)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))
@@ -74,8 +74,9 @@ case class Terminal(id: Int, location: ArenaEntity, publisher: ActorRef) extends
 
 case object Terminal {
 
-  def actors(id: Int, location: ArenaEntity, publisher: ActorRef)(implicit system: ActorSystem): ActorRef =
-    system.actorOf(Props.apply(classOf[Terminal], id, location, publisher))
+  def actors(id: Int, game: VideoGame, location: ArenaEntity, publisher: ActorRef)
+            (implicit system: ActorSystem): ActorRef =
+    system.actorOf(Props.apply(classOf[Terminal], id, game, location, publisher))
 
 }
 
