@@ -1,7 +1,6 @@
 package fr.xebia.ldi.fighter.schema
 
 import com.sksamuel.avro4s.RecordFormat
-import fr.xebia.ldi.fighter.entity.FieldEntity.Value
 import fr.xebia.ldi.fighter.entity.GameEntity
 
 
@@ -13,9 +12,7 @@ case class Round(arena: Int,
                  winner: Player,
                  looser: Player,
                  game: GameEntity.Value,
-                 field: Value,
-                 timestamp: Long,
-                 id: Option[String] = None)
+                 timestamp: Long)
 
 case object Round {
 

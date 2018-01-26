@@ -6,7 +6,6 @@ import akka.kafka.ProducerMessage
 import breeze.stats.distributions.Gaussian
 import fr.xebia.ldi.fighter.entity.ArenaEntity.ArenaEntity
 import fr.xebia.ldi.fighter.entity.CharacterEntity.CharacterEntity
-import fr.xebia.ldi.fighter.entity.FieldEntity.District
 import fr.xebia.ldi.fighter.schema.{Arena, Player, Round, VideoGame}
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -50,7 +49,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, game.label, District, DateTime.now().getMillis)
+    val round = Round(arena.id, id, winner, looser, game.label, DateTime.now().getMillis)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))

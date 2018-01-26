@@ -72,10 +72,10 @@ object Play extends App {
           executors = executors ++ Seq(
             "T0" -> Terminal.actors(0, TakkenGame, `6E-ARR`, producerRef),
             "T1" -> Terminal.actors(1, SoulCaliburGame, `6E-ARR`, producerRef),
-            "T2" -> Terminal.actors(2, StreetFighterGame, `6E-ARR`, producerRef),
+            "T2" -> Terminal.actors(2, KingOfFigtersGame, `6E-ARR`, producerRef),
             "T3" -> Terminal.actors(3, KingOfFigtersGame, `9E-ARR`, producerRef),
             "T4" -> Terminal.actors(4, StreetFighterGame, `15E-ARR`, producerRef),
-            "T5" -> Terminal.actors(5, KingOfFigtersGame, `16E-ARR`, producerRef),
+            "T5" -> Terminal.actors(5, StreetFighterGame, `16E-ARR`, producerRef),
             "T6" -> Terminal.actors(6, StreetFighterGame, DAKAR, producerRef),
             "T7" -> Terminal.actors(7, StreetFighterGame, NAMUR, producerRef),
             "T8" -> Terminal.actors(8, StreetFighterGame, ZURICH, producerRef))

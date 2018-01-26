@@ -20,16 +20,12 @@
       "type": "Player"
     },
     {
-      "name": "field",
-      "type": "FieldEntity"
+      "name": "game",
+      "type": "fr.xebia.ldi.fighter.entity.GameEntity"
     },
     {
-      "name": "id",
-      "type": [
-        "null",
-        "string"
-      ],
-      "default": null
+      "name": "timestamp",
+      "type": "long"
     }
   ]
 }
