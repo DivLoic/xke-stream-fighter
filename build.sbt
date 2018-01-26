@@ -7,7 +7,7 @@ maintainer := "Loïc DIVAD <ldivad@xebia.fr>"
 
 description :=
   """
-    |
+    |A simple demo of the kafka-streams Processor API
   """.stripMargin
 
 organizationHomepage := Some(url("http://blog.xebia.fr"))
@@ -15,7 +15,6 @@ organizationHomepage := Some(url("http://blog.xebia.fr"))
 coverageEnabled := true
 
 val akkaVersion = "2.5.6"
-val alpakkaVersion = "0.14"
 val reactivStream = "0.17"
 val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.4"
@@ -43,13 +42,16 @@ lazy val common = Seq(
 
   logLevel in doc := Level.Error
 )
+
 val publishSubModule: TaskKey[Unit] = taskKey[Unit]("A docker building task grouping all the submodules")
 publishSubModule := {}
-//publishSubModule <<= publishSubModule dependsOn (Keys.`package` in Compile)
-publishSubModule <<= publishSubModule dependsOn (Seq(
-  `fighter-processors`,
-  `fighter-actors`
-).map(module => (publishLocal in Docker) in module):_*)
+publishSubModule <<= publishSubModule dependsOn (
+  Seq(
+    `fighter-actors`,
+    `fighter-processors`
+  ).map(
+    module => (publishLocal in Docker) in module): _*
+  )
 
 lazy val `xke-stream-fighter` = (project in file("."))
   .aggregate(`fighter-processors`, `fighter-actors`)
@@ -86,7 +88,6 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.lightbend.akka" %% "akka-stream-alpakka-amqp" % alpakkaVersion,
     "com.typesafe.akka" %% "akka-stream-kafka" % "0.18",
     "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
   )
@@ -101,14 +102,6 @@ lazy val mathDependencies = Seq(
     "org.scalanlp" %% "breeze" % "0.13.2"
   )
 )
-
-/*lazy val serverDependencies = Seq(
-  libraryDependencies ++= Seq(
-    "org.eclipse.jetty" % "jetty-server" % jettyVersion,
-    "org.eclipse.jetty" % "jetty-servlet" % jettyVersion,
-    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
-  )
-)*/
 
 lazy val dockerSettings = Seq(
 
