@@ -6,7 +6,7 @@ import fr.xebia.ldi.fighter.schema.Arena;
 import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Round;
 import fr.xebia.ldi.fighter.schema.Victory;
-import fr.xebia.ldi.fighter.stream.queries.QueryTask;
+import fr.xebia.ldi.fighter.stream.queries.Query;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
 import fr.xebia.ldi.fighter.stream.utils.Parsing;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
@@ -19,11 +19,9 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.ReadOnlyWindowStore;
 import org.apache.kafka.streams.state.WindowStore;
 
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
@@ -52,7 +50,6 @@ public class StreamsDsl {
         SpecificAvroSerde<Player> playerSerde = new SpecificAvroSerde<>();
         playerSerde.configure(props, false);
 
-        ReadOnlyWindowStore<GenericRecord, Long> windowStore;
         TimeWindows window = TimeWindows.of(TimeUnit.SECONDS.toMillis(15));
 
         Materialized<GenericRecord, Long, WindowStore<Bytes, byte[]>> mat = Materialized.as("VICTORIES-STORE");
@@ -67,7 +64,7 @@ public class StreamsDsl {
 
         rounds
 
-                .filter((String key, Round round) -> round.getGame().equals(StreetFighter))
+                .filter((String key, Round round) -> round.getGame() == StreetFighter)
 
                 .map((String key, Round round) -> new KeyValue<>(extractArenaId(key), round.getWinner()))
 
@@ -78,7 +75,7 @@ public class StreamsDsl {
                 .groupByKey().windowedBy(window).count(mat)
 
                 // PRESENTATION PURPOSE ONLY
-                .toStream().map(Parsing::parseWindowKey).to("RESULTS");
+                .toStream().map(Parsing::parseWindowKey).to("RESULTS-DSL");
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), JobConfig.properties(config));
 
@@ -86,17 +83,7 @@ public class StreamsDsl {
 
         kafkaStreams.start();
 
-        // interactive queries
-
-        try {
-            Timer timer = new Timer();
-
-            windowStore = QueryTask.waitUntilStoreIsQueryable("VICTORIES-STORE", kafkaStreams);
-
-            timer.schedule(new QueryTask(windowStore, config.getString("tmp.output-table")), 0, 500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Query.start(kafkaStreams, "VICTORIES-STORE", config);
 
         Runtime.getRuntime().addShutdownHook(
                 new Thread(() -> {
@@ -105,7 +92,7 @@ public class StreamsDsl {
                 })
         );
 
-//        System.out.println(kafkaStreams.localThreadsMetadata());
+        //System.out.println(kafkaStreams.localThreadsMetadata());
     }
 
 }

@@ -88,7 +88,23 @@ public class Parsing {
         record.put("dt", startTime);
 
         return new KeyValue<>(windowKey.key(), record);
-
     }
 
+    public static KeyValue<GenericRecord, GenericRecord> parseWindowKey(long windowStart, GenericRecord group, long count) {
+        String startTime = new DateTime(windowStart).toString("HH:mm:ss");
+        String concept = group.get("concept").toString();
+        String character = group.get("character").toString();
+
+        /*String key = String.format("%1$-" + 10 + "s", concept) + "|| " +
+        String.format("%1$-" + 10 + "s", character) + "|| " +
+        String.format("%1$-" + 10 + "s", startTime) + "|| ";*/
+
+        GenericRecord record = new GenericData.Record(aggValueSchema);
+        record.put("character", character);
+        record.put("concept", concept);
+        record.put("victories", count);
+        record.put("dt", startTime);
+
+        return new KeyValue<>(group, record);
+    }
 }

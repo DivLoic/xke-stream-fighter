@@ -4,6 +4,8 @@ import fr.xebia.ldi.fighter.schema.Round;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 
+import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
+
 /**
  * Created by loicmdivad.
  */
@@ -20,7 +22,7 @@ public class ProcessRound implements Processor<String, Round> {
 
     @Override
     public void process(String key, Round value) {
-        if(value.getWinner().getCombo() > 3){
+        if(value.getGame() == StreetFighter){
             context.forward(key, value.getWinner());
         }
     }

@@ -9,6 +9,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyWindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +34,8 @@ import static fr.xebia.ldi.fighter.stream.utils.Parsing.generateWindowKeys;
  */
 public class QueryTask extends TimerTask {
 
-    String outpath;
-    ReadOnlyWindowStore<GenericRecord, Long> windowStore;
+    private String outpath;
+    private ReadOnlyWindowStore<GenericRecord, Long> windowStore;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public QueryTask(ReadOnlyWindowStore<GenericRecord, Long> windowStore, String outpath) {
@@ -50,13 +51,21 @@ public class QueryTask extends TimerTask {
         this.windowStore = windowStore;
     }
 
+    private static Long computeWindowStart(long timestamp) {
+        DateTime datetime = new DateTime(timestamp);
+        int start = datetime.get(DateTimeFieldType.secondOfMinute()) / 15;
+        DateTime windowStart = datetime.secondOfMinute().setCopy(start * 15);
+        return windowStart.getMillis();
+    }
+
     @Override
     public void run() {
         long now = System.currentTimeMillis();
         long since = now - TimeUnit.SECONDS.toMillis(15);
+        long windowstart = computeWindowStart(since);
 
         String[] lines = generateWindowKeys("PRO")
-                .map((GenericRecord key) -> querying(key, since, now, windowStore))
+                .map((GenericRecord key) -> querying(key, windowstart, now, windowStore))
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparingLong(VictoriesCount::getVictories).reversed())
                 .map(this::writeTable).toArray(String[]::new);

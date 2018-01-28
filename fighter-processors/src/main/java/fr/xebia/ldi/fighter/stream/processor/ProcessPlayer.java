@@ -1,6 +1,5 @@
 package fr.xebia.ldi.fighter.stream.processor;
 
-
 import fr.xebia.ldi.fighter.schema.Arena;
 import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Victory;
@@ -32,6 +31,7 @@ public class ProcessPlayer implements Processor<String, Player> {
         this.context = context;
         this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
         this.arenaMap = loadFromLocalState();
+
         this.context.schedule(100, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> {
             this.arenaMap = loadFromLocalState();
         });
@@ -44,7 +44,7 @@ public class ProcessPlayer implements Processor<String, Player> {
         if(origin != null){
             Victory victory = new Victory(value, origin);
             GenericRecord victoryKey = groupedDataKey(victory);
-            context.forward(victoryKey,victory);
+            context.forward(victoryKey, victory);
         }
     }
 

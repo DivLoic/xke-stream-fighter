@@ -10,7 +10,7 @@ import fr.xebia.ldi.fighter.stream.processor.ProcessArena;
 import fr.xebia.ldi.fighter.stream.processor.ProcessPlayer;
 import fr.xebia.ldi.fighter.stream.processor.ProcessRound;
 import fr.xebia.ldi.fighter.stream.processor.ProcessVictory;
-import fr.xebia.ldi.fighter.stream.queries.QueryTask;
+import fr.xebia.ldi.fighter.stream.queries.Query;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -21,7 +21,6 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.state.*;
 
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,23 +79,22 @@ public class ProcessorAPI {
 
                 .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
 
-                .addSink("SINK", "RESULTS", Serdes.String().serializer(), victorySerde.serializer(), "PROCESS-VICTORY");
+                .addSink("SINK", "RESULTS-PROC", avroSerde.serializer(), avroSerde.serializer(), "PROCESS-VICTORY");
 
-        KafkaStreams kafkaStream = new KafkaStreams(builder, JobConfig.properties(config));
+        KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
-        kafkaStream.start();
+        kafkaStreams.cleanUp();
 
-        ReadOnlyWindowStore<GenericRecord, Long> windowStore;
+        kafkaStreams.start();
 
-        try {
-            Timer timer = new Timer();
+        Query.start(kafkaStreams, "VICTORIES-STORE", config);
 
-            windowStore = QueryTask.waitUntilStoreIsQueryable("VICTORIES-STORE", kafkaStream);
-
-            timer.schedule(new QueryTask(windowStore, config.getString("tmp.output-table")), 0, 500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(() -> {
+                    kafkaStreams.close();
+                    kafkaStreams.cleanUp();
+                })
+        );
 
     }
 }

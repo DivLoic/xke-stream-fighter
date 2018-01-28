@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
+import static fr.xebia.ldi.fighter.stream.utils.Parsing.parseWindowKey;
 
 /**
  * Created by loicmdivad.
@@ -39,16 +40,24 @@ public class ProcessVictory implements Processor {
     @Override
     public void process(Object key, Object value) {
 
+        long now = DateTime.now().getMillis();
+        long since = now - TimeUnit.SECONDS.toMillis(15);
+        long windowStart = computeWindowStart(since);
+
         GenericRecord groupKey = groupedDataKey((Victory) value);
 
-        WindowStoreIterator<Long> it = this.victoryStore.fetch(groupKey, fifteenSecAgo(), now());
+        WindowStoreIterator<Long> it = this.victoryStore.fetch(groupKey, windowStart, now);
 
         if(it.hasNext()){
             KeyValue<Long, Long> keyValue = it.next();
-            Long total = keyValue.value + 1L;
-            this.victoryStore.put(groupKey, total, computeWindowStart(keyValue.key));
+            long total = keyValue.value + 1L;
+            this.victoryStore.put(groupKey, total, windowStart);
+            KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, total);
+            context.forward(kvDisplay.key, kvDisplay.value);
         } else {
-            this.victoryStore.put(groupKey, 1L, computeWindowStart(fifteenSecAgo()));
+            this.victoryStore.put(groupKey, 1L, windowStart);
+            KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, 1);
+            context.forward(kvDisplay.key, kvDisplay.value);
         }
 
     }
@@ -63,20 +72,15 @@ public class ProcessVictory implements Processor {
 
     }
 
-    private static Long fifteenSecAgo() {
-        return new DateTime().minus(TimeUnit.SECONDS.toMillis(15)).getMillis();
-    }
-
-    private static Long now() {
-        return DateTime.now().getMillis();
-    }
-
-    private static Long computeWindowStart(Long timestamp) {
+    private static Long computeWindowStart(long timestamp) {
         DateTime datetime = new DateTime(timestamp);
         int start = datetime.get(DateTimeFieldType.secondOfMinute()) / 15;
         DateTime windowStart = datetime.secondOfMinute().setCopy(start * 15);
         return windowStart.getMillis();
     }
 
+    /*private static Long kWindowStart(long timestamp) {
+        long windowStart = (Math.max(0, timestamp - sizeMs + advanceMs) / advanceMs) * advanceMs;
+    }*/
 
 }
