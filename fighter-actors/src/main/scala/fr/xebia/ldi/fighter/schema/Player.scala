@@ -15,7 +15,8 @@ case object Player {
 
   def apply(c: CharacterEntity): Player = this(c.name, 100, 0)
 
-  def apply(c: CharacterEntity, life: Int, combo: Int, hits: Double): Player = this(c.name, life, combo)
+  def apply(c: CharacterEntity, life: Int, combo: Int, hits: Double, fatal: Boolean): Player =
+    this(c.name, life, combo, fatal)
 
   val playerFormat: RecordFormat[Player] = RecordFormat[Player]
 

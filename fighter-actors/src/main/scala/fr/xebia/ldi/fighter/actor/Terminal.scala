@@ -32,7 +32,8 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
     character <- arbitrary[CharacterEntity](game.genarator)
     combos <- Gen.chooseNum(0, 8)
     hits <- Gen.chooseNum(0, 3)
-  } yield Player(character, score(dist), combos, hits)
+    fatal <- Gen.frequency((2, true), (5, false))
+  } yield Player(character, score(dist), combos, hits, fatal)
 
   private def score(dist: Gaussian): Int = dist
     .map(Math.min(100, _))
@@ -64,7 +65,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
     */
   def select(): (Player, Player) = (
     selector pureApply (default, Seed.random()),
-    selector pureApply (default, Seed.random()) copy(life = 0)
+    selector pureApply (default, Seed.random()) copy(life = 0, fatal = false)
   )
 
   def key: String = s"${arena.id}-$id-${System.currentTimeMillis()}"

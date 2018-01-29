@@ -5,18 +5,11 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.state.KeyValueIterator;
-import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.WindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
-import org.apache.kafka.streams.state.internals.KeyValueStoreBuilder;
-import org.apache.kafka.streams.state.internals.MeteredWindowStore;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
 import org.joda.time.DateTimeFieldType;
 
-import java.lang.management.OperatingSystemMXBean;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
@@ -39,10 +32,12 @@ public class ProcessVictory implements Processor {
 
     @Override
     public void process(Object key, Object value) {
+        this.context.timestamp();
 
-        long now = DateTime.now().getMillis();
-        long since = now - TimeUnit.SECONDS.toMillis(15);
-        long windowStart = computeWindowStart(since);
+        long now = this.context.timestamp();
+        //long since = now - TimeUnit.SECONDS.toMillis(15);
+        //long windowStart = computeWindowStart(now);
+        long windowStart = (Math.max(0, now - 15000 + 15000) / 15000) * 15000;
 
         GenericRecord groupKey = groupedDataKey((Victory) value);
 

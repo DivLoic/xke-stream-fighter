@@ -7,6 +7,7 @@ import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Round;
 import fr.xebia.ldi.fighter.schema.Victory;
 import fr.xebia.ldi.fighter.stream.queries.Query;
+import fr.xebia.ldi.fighter.stream.utils.EventTimeExtractor;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
 import fr.xebia.ldi.fighter.stream.utils.Parsing;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
@@ -14,10 +15,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.Consumed;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
-import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.WindowStore;
 
@@ -27,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.extractArenaId;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
+import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
  * Created by loicmdivad.
@@ -60,7 +59,7 @@ public class StreamsDsl {
                 .table("ARENAS", Consumed.with(Serdes.String(), arenaSerde));
 
         KStream<String, Round> rounds = builder
-                .stream("ROUNDS", Consumed.with(Serdes.String(), roundSerde));
+                .stream("ROUNDS", Consumed.with(Serdes.String(), roundSerde, new EventTimeExtractor(), LATEST));
 
         rounds
 
