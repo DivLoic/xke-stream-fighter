@@ -15,7 +15,7 @@ public class EventTimeExtractor implements TimestampExtractor {
             GenericRecord value = (GenericRecord) record.value();
             return (long) value.get("timestamp");
         } catch (Exception e) {
-            return record.timestamp();
+            return -1;
         }
     }
 }
