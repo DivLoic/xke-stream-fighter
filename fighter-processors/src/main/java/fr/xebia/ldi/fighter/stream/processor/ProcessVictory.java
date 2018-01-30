@@ -12,6 +12,7 @@ import org.joda.time.DateTimeFieldType;
 
 import java.util.concurrent.TimeUnit;
 
+import static fr.xebia.ldi.fighter.stream.queries.QueryTask.computeWindowStart;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.parseWindowKey;
 
@@ -37,7 +38,7 @@ public class ProcessVictory implements Processor {
         long now = this.context.timestamp();
         //long since = now - TimeUnit.SECONDS.toMillis(15);
         //long windowStart = computeWindowStart(now);
-        long windowStart = (Math.max(0, now - 15000 + 15000) / 15000) * 15000;
+        long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
         GenericRecord groupKey = groupedDataKey((Victory) value);
 
@@ -66,16 +67,4 @@ public class ProcessVictory implements Processor {
     public void close() {
 
     }
-
-    private static Long computeWindowStart(long timestamp) {
-        DateTime datetime = new DateTime(timestamp);
-        int start = datetime.get(DateTimeFieldType.secondOfMinute()) / 15;
-        DateTime windowStart = datetime.secondOfMinute().setCopy(start * 15);
-        return windowStart.getMillis();
-    }
-
-    /*private static Long kWindowStart(long timestamp) {
-        long windowStart = (Math.max(0, timestamp - sizeMs + advanceMs) / advanceMs) * advanceMs;
-    }*/
-
 }
