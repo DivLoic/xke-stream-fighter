@@ -9,7 +9,6 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyWindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +22,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static fr.xebia.ldi.fighter.stream.queries.QueryUtil.BORDER_LEFT;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.generateWindowKeys;
 
 /**
@@ -51,18 +52,15 @@ public class QueryTask extends TimerTask {
         this.windowStore = windowStore;
     }
 
-    private static Long computeWindowStart(long timestamp) {
-        DateTime datetime = new DateTime(timestamp);
-        int start = datetime.get(DateTimeFieldType.secondOfMinute()) / 15;
-        DateTime windowStart = datetime.secondOfMinute().setCopy(start * 15);
-        return windowStart.getMillis();
+    public static Long computeWindowStart(long timestamp, long windowSize) {
+        return (Math.max(0, timestamp - windowSize + windowSize) / windowSize) * windowSize;
     }
 
     @Override
     public void run() {
         long now = System.currentTimeMillis();
-        long since = now - TimeUnit.SECONDS.toMillis(15);
-        long windowstart = computeWindowStart(since);
+        //long since = now - TimeUnit.SECONDS.toMillis(15);
+        long windowstart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
         String[] lines = generateWindowKeys("PRO")
                 .map((GenericRecord key) -> querying(key, windowstart, now, windowStore))
@@ -71,7 +69,7 @@ public class QueryTask extends TimerTask {
                 .map(this::writeTable).toArray(String[]::new);
 
         if(lines.length != 0){
-            printHeadAndFooter(this.outpath, false);
+            printLayout(this.outpath, QueryUtil::header);
 
             try {
                 Files.write(
@@ -83,7 +81,7 @@ public class QueryTask extends TimerTask {
                 e.printStackTrace();
             }
 
-            printHeadAndFooter(this.outpath, true);
+            printLayout(this.outpath, QueryUtil::footer);
         }
     }
 
@@ -125,32 +123,24 @@ public class QueryTask extends TimerTask {
         )
                 .map(Object::toString)
                 .map((String cell) -> String.format("%1$-" + 12 + "s", cell))
-                .collect((Collectors.joining("| "))) + "| ";
+                .collect((Collectors.joining(BORDER_LEFT))) + "| ";
     }
 
-
-    private static String header(){
-        return " -------------+-------------+-------------+------------- \n" +
-                "| " + Stream.of("concept", "window", "characters", "victories")
-                .map((String cell) -> String.format("%1$-" + 12 + "s", cell) + "| ")
-                .collect((Collectors.joining(""))) + "\n" +
-                " -------------+-------------+-------------+------------- \n";
-    }
-
-    private static String footer(){
-        return " -------------+-------------+-------------+------------- \n";
-    }
-
-
-    private void printHeadAndFooter(String filePath, Boolean footer){
+    private void printLayout(String filePath, Callable<String> layout){
         File file = new File(filePath);
-        String lines = footer ? footer() : header();
+        FileWriter writer = null;
         try {
-            FileWriter writer = new FileWriter(file, footer);
+            String lines = layout.call();
+            writer = new FileWriter(file, lines.length() < 60);
             writer.write(lines);
-            writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
