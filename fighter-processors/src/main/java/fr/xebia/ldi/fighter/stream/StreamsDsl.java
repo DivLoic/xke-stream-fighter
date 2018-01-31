@@ -15,15 +15,20 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.*;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.Consumed;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.state.WindowStore;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
-import static fr.xebia.ldi.fighter.stream.utils.Parsing.extractArenaId;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
@@ -55,8 +60,8 @@ public class StreamsDsl {
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        KTable<String, Arena> arenaTable = builder
-                .table("ARENAS", Consumed.with(Serdes.String(), arenaSerde));
+        GlobalKTable<String, Arena> arenaTable = builder
+                .globalTable("ARENAS", Consumed.with(Serdes.String(), arenaSerde));
 
         KStream<String, Round> rounds = builder
                 .stream("ROUNDS", Consumed.with(Serdes.String(), roundSerde, new EventTimeExtractor(), LATEST));
@@ -65,9 +70,9 @@ public class StreamsDsl {
 
                 .filter((String key, Round round) -> round.getGame() == StreetFighter)
 
-                .map((String key, Round round) -> new KeyValue<>(extractArenaId(key), round.getWinner()))
+                .map((String key, Round round) -> new KeyValue<>(key, round.getWinner()))
 
-                .join(arenaTable, Victory::new, Joined.with(Serdes.String(), playerSerde, arenaSerde))
+                .join(arenaTable, (arena, player) -> arena, Victory::new) //Joined.with(Serdes.String(), playerSerde, arenaSerde))
 
                 .map((String key, Victory value) -> new KeyValue<>(groupedDataKey(value), value))
 
