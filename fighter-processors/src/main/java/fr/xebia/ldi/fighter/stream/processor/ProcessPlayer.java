@@ -13,7 +13,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.util.HashMap;
 
-import static fr.xebia.ldi.fighter.stream.utils.Parsing.extractArenaId;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 
 /**
@@ -39,8 +38,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 
     @Override
     public void process(String key, Player value) {
-        String arenaKey = extractArenaId(key);
-        Arena origin = arenaMap.get(arenaKey);
+        Arena origin = arenaMap.get(key);
         if(origin != null){
             Victory victory = new Victory(value, origin);
             GenericRecord victoryKey = groupedDataKey(victory);

@@ -68,7 +68,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
     selector pureApply (default, Seed.random()) copy(life = 0, fatal = false)
   )
 
-  def key: String = s"${arena.id}-$id-${System.currentTimeMillis()}"
+  def key: String = arena.id.toString
 
 }
 

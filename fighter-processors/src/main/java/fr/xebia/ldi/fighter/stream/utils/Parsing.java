@@ -62,24 +62,10 @@ public class Parsing {
         return record;
     }
 
-    public static String extractArenaId(String roundId){
-        String id;
-        try {
-            id = roundId.split("-")[0];
-        } catch(Throwable ex){
-            id = "";
-        }
-        return id;
-    }
-
     public static KeyValue<GenericRecord, GenericRecord> parseWindowKey(Windowed<GenericRecord> windowKey, Long count) {
         String startTime = new DateTime(windowKey.window().start()).toString("HH:mm:ss");
         String concept = windowKey.key().get("concept").toString();
         String character = windowKey.key().get("character").toString();
-
-        /*String key = String.format("%1$-" + 10 + "s", concept) + "|| " +
-        String.format("%1$-" + 10 + "s", character) + "|| " +
-        String.format("%1$-" + 10 + "s", startTime) + "|| ";*/
 
         GenericRecord record = new GenericData.Record(aggValueSchema);
         record.put("character", character);
@@ -94,10 +80,6 @@ public class Parsing {
         String startTime = new DateTime(windowStart).toString("HH:mm:ss");
         String concept = group.get("concept").toString();
         String character = group.get("character").toString();
-
-        /*String key = String.format("%1$-" + 10 + "s", concept) + "|| " +
-        String.format("%1$-" + 10 + "s", character) + "|| " +
-        String.format("%1$-" + 10 + "s", startTime) + "|| ";*/
 
         GenericRecord record = new GenericData.Record(aggValueSchema);
         record.put("character", character);
