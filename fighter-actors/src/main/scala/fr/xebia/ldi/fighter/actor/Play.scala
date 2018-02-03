@@ -9,7 +9,7 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
 import akka.{Done, NotUsed}
 import com.typesafe.config.ConfigFactory
-import fr.xebia.ldi.fighter.actor.utils.AvroSerde
+import fr.xebia.ldi.fighter.actor.utils.{Admin, AvroSerde}
 import fr.xebia.ldi.fighter.entity.ArenaEntity
 import fr.xebia.ldi.fighter.entity.ArenaEntity._
 import fr.xebia.ldi.fighter.schema._
@@ -48,7 +48,7 @@ object Play extends App {
       val producerSettings: ProducerSettings[String, GenericRecord] =
         ProducerSettings(system, new StringSerializer(), localGeneriAvroSerde.serializer())
 
-      // Admin.topicsCreation(conf, producerSettings.properties)
+      Admin.topicsCreation(conf, producerSettings.properties)
 
       val doneRooms: Future[Done] = Source.fromIterator(() => {
         ArenaEntity.Arenas.map(Arena(_))
@@ -97,7 +97,6 @@ object Play extends App {
       master ! "T6"
       master ! "T7"
       master ! "T8"
-      master ! "T9"
 
   }
 

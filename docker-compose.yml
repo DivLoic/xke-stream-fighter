@@ -74,7 +74,7 @@ services:
     environment:
       KAFKA_BROKERS: kafka:9092
       SCHEMA_REGISTRY: http://registry:8081/
-      TOPIC_LIST: "ARENAS:1:3,ROUNDS:3:2,RESULTS:1:3,TOKKENS:1:3"
+      TOPIC_LIST: "ARENAS:1:1,ROUNDS:6:1,RESULTS:1:1,TOKKENS:1:1"
 
 #  processors:
 #    image: fighter-processors:0.1.0-SNAPSHOT
