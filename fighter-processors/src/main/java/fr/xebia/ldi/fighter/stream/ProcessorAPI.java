@@ -17,6 +17,7 @@ import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.state.*;
@@ -71,15 +72,19 @@ public class ProcessorAPI {
                 .addSource(LATEST, "ROUNDS", new EventTimeExtractor(),
                         Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
 
-                .addProcessor("ARENA-ROUND", ProcessArena::new, "ARENAS")
+                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS")
 
                 .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS")
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
+                .addSink("REPARTITION", "GROUPED-PLAYERS", avroSerde.serializer(), playerSerde.serializer(), "PROCESS-PLAYER")
+
+                .addSource("GROUPED-PLAYERS", Serdes.String().deserializer(), arenaSerde.deserializer(), "GROUPED-PLAYERS")
+
                 .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "PROCESS-PLAYER")
 
-                .addStateStore(arenaStoreBuilder, "ARENA-ROUND", "PROCESS-PLAYER")
+                .addStateStore(arenaStoreBuilder, "PROCESS-ARENA", "PROCESS-PLAYER")
 
                 .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
 
