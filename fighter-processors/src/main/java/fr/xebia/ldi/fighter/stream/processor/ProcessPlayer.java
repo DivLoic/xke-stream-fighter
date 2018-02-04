@@ -31,7 +31,7 @@ public class ProcessPlayer implements Processor<String, Player> {
         this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
         this.arenaMap = loadFromLocalState();
 
-        this.context.schedule(100, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> {
+        this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> {
             this.arenaMap = loadFromLocalState();
         });
     }
@@ -51,7 +51,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 
     @Override
     public void close() {
-        this.arenaStore.close();
+
     }
 
     private HashMap<String, Arena> loadFromLocalState() {
