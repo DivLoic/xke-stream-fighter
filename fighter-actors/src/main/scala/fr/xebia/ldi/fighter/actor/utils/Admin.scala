@@ -29,6 +29,8 @@ object Admin {
       .toList
 
     client.createTopics(topics.asJava)
+
+    client.close()
   }
 
 }
