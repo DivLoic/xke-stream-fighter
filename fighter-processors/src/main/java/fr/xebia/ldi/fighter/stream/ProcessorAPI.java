@@ -17,10 +17,12 @@ import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.state.*;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
+import org.apache.kafka.streams.state.WindowStore;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -78,11 +80,11 @@ public class ProcessorAPI {
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
-                .addSink("REPARTITION", "GROUPED-PLAYERS", avroSerde.serializer(), playerSerde.serializer(), "PROCESS-PLAYER")
+                .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), playerSerde.serializer(), "PROCESS-PLAYER")
 
-                .addSource("GROUPED-PLAYERS", Serdes.String().deserializer(), arenaSerde.deserializer(), "GROUPED-PLAYERS")
+                .addSource("REPARTITIONED", Serdes.String().deserializer(), arenaSerde.deserializer(), "REPARTITIONED")
 
-                .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "PROCESS-PLAYER")
+                .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
 
                 .addStateStore(arenaStoreBuilder, "PROCESS-ARENA", "PROCESS-PLAYER")
 
