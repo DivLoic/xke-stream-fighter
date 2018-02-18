@@ -82,7 +82,7 @@ public class ProcessorAPI {
 
                 .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), playerSerde.serializer(), "PROCESS-PLAYER")
 
-                .addSource("REPARTITIONED", Serdes.String().deserializer(), arenaSerde.deserializer(), "REPARTITIONED")
+                .addSource("REPARTITIONED", avroSerde.deserializer(), playerSerde.deserializer(), "REPARTITIONED")
 
                 .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
 
