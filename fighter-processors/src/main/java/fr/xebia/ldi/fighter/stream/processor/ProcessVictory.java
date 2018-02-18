@@ -7,8 +7,6 @@ import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.WindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,11 +31,8 @@ public class ProcessVictory implements Processor {
 
     @Override
     public void process(Object key, Object value) {
-        this.context.timestamp();
-
         long now = this.context.timestamp();
-        //long since = now - TimeUnit.SECONDS.toMillis(15);
-        //long windowStart = computeWindowStart(now);
+
         long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
         GenericRecord groupKey = groupedDataKey((Victory) value);
