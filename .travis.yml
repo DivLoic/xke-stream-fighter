@@ -1,0 +1,16 @@
+language: scala
+
+scala:
+  - 2.12.4
+
+jdk: oraclejdk8
+
+env: APP="XSF"
+
+sudo: false
+
+script:
+  - sbt clean coverage test coverageReport
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
