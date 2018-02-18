@@ -37,9 +37,9 @@ public class ProcessVictory implements Processor {
 
         long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
-        GenericRecord groupKey = groupedDataKey((Victory) value);
+        GenericRecord genericKey = (GenericRecord) key;
 
-        WindowStoreIterator<Long> it = this.victoryStore.fetch(groupKey, windowStart, now);
+        WindowStoreIterator<Long> it = this.victoryStore.fetch((GenericRecord) key, windowStart, now);
 
         if(it.hasNext()){
             KeyValue<Long, Long> keyValue = it.next();
@@ -48,9 +48,9 @@ public class ProcessVictory implements Processor {
             total = 1L;
         }
 
-        this.victoryStore.put(groupKey, total, windowStart);
+        this.victoryStore.put(genericKey, total, windowStart);
 
-        KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, total);
+        KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, genericKey, total);
 
         context.forward(kvDisplay.key, kvDisplay.value);
     }
