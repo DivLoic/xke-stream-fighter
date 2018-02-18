@@ -6,10 +6,7 @@ import fr.xebia.ldi.fighter.entity.CharacterEntity.CharacterEntity
 /**
   * Created by loicmdivad.
   */
-case class Player(name: String,
-                  life: Int,
-                  combo: Int,
-                  fatal: Boolean = false)
+case class Player(name: String, life: Int, combo: Int, fatal: Boolean = false)
 
 case object Player {
 
@@ -19,5 +16,4 @@ case object Player {
     this(c.name, life, combo, fatal)
 
   val playerFormat: RecordFormat[Player] = RecordFormat[Player]
-
 }

@@ -6,15 +6,11 @@ import fr.xebia.ldi.fighter.entity.CharacterEntity.CharacterEntity
 /**
   * Created by loicmdivad.
   */
-case class Character(name: String,
-                     country: String,
-                     specialty: String,
-                     mention: String)
+case class Character(name: String, country: String)
 
 case object Character {
 
-  def apply[T](c: CharacterEntity): Character = this (c.name, c.country, c.specialty, c.mention)
+  def apply[T](c: CharacterEntity): Character = this (c.name, c.country)
 
   val fighterFormat: RecordFormat[Character] = RecordFormat[Character]
-
 }

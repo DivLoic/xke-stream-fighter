@@ -10,23 +10,35 @@ import org.scalacheck.Arbitrary
   */
 sealed trait VideoGame {
 
-  def label: Game = this match {
-    case TakkenGame => GameEntity.Takken
-    case SoulCaliburGame => GameEntity.SoulCalibur
-    case StreetFighterGame => GameEntity.StreetFighter
-    case KingOfFigtersGame => GameEntity.KingOfFighters
-  }
+  def label: Game
 
-  def genarator: Arbitrary[CharacterEntity] = this match {
-    case TakkenGame => CharacterEntity.TakkenaArbitrary
-    case SoulCaliburGame => CharacterEntity.SoulArbitrary
-    case StreetFighterGame => CharacterEntity.StreetArbitrary
-    case KingOfFigtersGame => CharacterEntity.KoFArbitrary
-  }
-
+  def genarator: Arbitrary[CharacterEntity]
 }
 
-case object StreetFighterGame extends VideoGame
-case object TakkenGame extends VideoGame
-case object KingOfFigtersGame extends VideoGame
-case object SoulCaliburGame extends VideoGame
+case object StreetFighterGame extends VideoGame{
+
+  override def label: Game = GameEntity.StreetFighter
+
+  override def genarator: Arbitrary[CharacterEntity] = CharacterEntity.StreetArbitrary
+}
+
+case object TakkenGame extends VideoGame {
+
+  override def label: Game = GameEntity.Takken
+
+  override def genarator: Arbitrary[CharacterEntity] = CharacterEntity.TakkenaArbitrary
+}
+
+case object KingOfFigtersGame extends VideoGame {
+
+  override def label: Game = GameEntity.KingOfFighters
+
+  override def genarator: Arbitrary[CharacterEntity] = CharacterEntity.KoFArbitrary
+}
+
+case object SoulCaliburGame extends VideoGame {
+
+  override def label: Game = GameEntity.SoulCalibur
+
+  override def genarator: Arbitrary[CharacterEntity] = CharacterEntity.SoulArbitrary
+}
