@@ -13,10 +13,8 @@ import org.joda.time.DateTime
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.rng.Seed
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-
 
 /**
   * Created by loicmdivad.
