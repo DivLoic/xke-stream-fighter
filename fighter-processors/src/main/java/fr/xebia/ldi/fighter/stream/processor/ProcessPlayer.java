@@ -28,7 +28,9 @@ public class ProcessPlayer implements Processor<String, Player> {
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
         this.context = context;
+
         this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
+
         this.arenaMap = loadFromLocalState();
 
         this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
@@ -38,9 +40,13 @@ public class ProcessPlayer implements Processor<String, Player> {
     @Override
     public void process(String key, Player value) {
         Arena origin = arenaMap.get(key);
+
         if(origin != null){
+
             Victory victory = new Victory(value, origin);
+
             GenericRecord victoryKey = groupedDataKey(victory);
+
             context.forward(victoryKey, victory);
         }
     }
