@@ -31,6 +31,8 @@ public class ProcessVictory implements Processor {
 
     @Override
     public void process(Object key, Object value) {
+        long total;
+
         long now = this.context.timestamp();
 
         long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
@@ -41,16 +43,16 @@ public class ProcessVictory implements Processor {
 
         if(it.hasNext()){
             KeyValue<Long, Long> keyValue = it.next();
-            long total = keyValue.value + 1L;
-            this.victoryStore.put(groupKey, total, windowStart);
-            KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, total);
-            context.forward(kvDisplay.key, kvDisplay.value);
+            total = keyValue.value + 1L;
         } else {
-            this.victoryStore.put(groupKey, 1L, windowStart);
-            KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, 1);
-            context.forward(kvDisplay.key, kvDisplay.value);
+            total = 1L;
         }
 
+        this.victoryStore.put(groupKey, total, windowStart);
+
+        KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, groupKey, total);
+
+        context.forward(kvDisplay.key, kvDisplay.value);
     }
 
     @Override
