@@ -1,4 +1,5 @@
 # xke-stream-fighter
+[![Build Status](https://travis-ci.org/DivLoic/xke-stream-fighter.svg?branch={{branch}})](https://travis-ci.org/DivLoic/xke-stream-fighter)
 
 ## Description 
 This project is related to the talk: [**Processor API**](#/). 
