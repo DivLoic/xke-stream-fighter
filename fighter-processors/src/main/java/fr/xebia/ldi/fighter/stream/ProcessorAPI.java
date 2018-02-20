@@ -74,9 +74,9 @@ public class ProcessorAPI {
                 .addSource(LATEST, "ROUNDS", new EventTimeExtractor(),
                         Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
 
-                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS")
-
                 .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS")
+
+                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS")
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
