@@ -39,11 +39,9 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
     .draw().toInt
 
   override def receive = {
-    case _ =>
-      val dt = Gen.choose(0.1, 1.5).sample.get
+    case _ => val dt = Gen.choose(0.1, 1.5).sample.get
       context.system.scheduler.scheduleOnce(dt seconds, self, play())
   }
-
 
   def play(): Unit = {
     val (winner, looser) = select()
@@ -67,7 +65,6 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   )
 
   def key: String = arena.id.toString
-
 }
 
 case object Terminal {
@@ -75,6 +72,5 @@ case object Terminal {
   def actors(id: Int, game: VideoGame, location: ArenaEntity, publisher: ActorRef)
             (implicit system: ActorSystem): ActorRef =
     system.actorOf(Props.apply(classOf[Terminal], id, game, location, publisher))
-
 }
 

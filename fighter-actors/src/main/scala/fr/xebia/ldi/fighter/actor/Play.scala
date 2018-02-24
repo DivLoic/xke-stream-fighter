@@ -31,18 +31,17 @@ object Play extends App {
 
   val conf = ConfigFactory.load()
 
-  val avroSerde =  AvroSerde.genericSerdeConfigure(conf)
+  val avroSerde = AvroSerde.genericSerdeConfigure(conf)
 
   AvroSerde.retryCallSchemaRegistry(conf, 3) match {
 
     case Failure(ex: Throwable) =>
-      logger error  "Fail to call the schema registry. shutting down now."
+      logger error "Fail to call the schema registry. shutting down now."
       logger error ex.getMessage
       system.terminate()
       throw ex
 
     case Success(payload) =>
-
       logger debug s"Succesfully call the schema registry: $payload"
 
       val producerSettings: ProducerSettings[String, GenericRecord] =
@@ -57,13 +56,12 @@ object Play extends App {
 
       implicit val producerRef: ActorRef =
         Source.actorRef[Message[String, GenericRecord, NotUsed]](10, OverflowStrategy.dropBuffer)
-        .via(Producer.flow(producerSettings))
-        .to(Sink.ignore)
-        .run()
+          .via(Producer.flow(producerSettings))
+          .to(Sink.ignore)
+          .run()
 
       val stores = Stores.allTerminals
 
       (0 to 8).foreach(i => stores ! s"T$i")
   }
-
 }
