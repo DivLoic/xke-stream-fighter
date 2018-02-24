@@ -13,7 +13,6 @@ import scala.collection.JavaConverters._
 object Admin {
 
   def topicsCreation(config: Config, props: Map[String, String]): Unit = {
-
     val javaProperties = props.foldLeft(new Properties())((properties, map) => {
       properties.put(map._1, map._2)
       properties
@@ -29,8 +28,6 @@ object Admin {
       .toList
 
     client.createTopics(topics.asJava)
-
     client.close()
   }
-
 }
