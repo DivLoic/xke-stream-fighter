@@ -8,10 +8,10 @@ relies on a lower level api and why this api is expose. While describing
 the library, this modules shows a few stream processing concepts. 
 
 ### Stream DSL
-This higher level API brings the `Kstream` & `Ktable` abstractions.
+This higher level API brings the `KStream` & `KTable` abstractions.
 It's simple, expressif and declarative. Here is a simple aggregation.
 
-```
+```java
 StreamsBuilder builder = new StreamsBuilder();
 KTable<String, Arena> arenaTable = builder.table(/** */ "ARENAS", "ARENA-STORE");
 KStream<String, Round> winners = builder.stream(/** */ "ROUNDS");
