@@ -72,7 +72,7 @@ public class StreamsDsl {
 
                 .map((String key, Round round) -> new KeyValue<>(key, round.getWinner()))
 
-                .join(arenaTable, (arena, player) -> arena, Victory::new) //Joined.with(Serdes.String(), playerSerde, arenaSerde))
+                .join(arenaTable, (arena, player) -> arena, Victory::new)
 
                 .map((String key, Victory value) -> new KeyValue<>(groupedDataKey(value), value))
 

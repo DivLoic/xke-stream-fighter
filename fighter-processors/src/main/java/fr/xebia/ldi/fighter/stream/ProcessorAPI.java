@@ -80,9 +80,9 @@ public class ProcessorAPI {
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
-                .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), playerSerde.serializer(), "PROCESS-PLAYER")
+                .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), victorySerde.serializer(), "PROCESS-PLAYER")
 
-                .addSource("REPARTITIONED", avroSerde.deserializer(), playerSerde.deserializer(), "REPARTITIONED")
+                .addSource("REPARTITIONED", avroSerde.deserializer(), victorySerde.deserializer(), "REPARTITIONED")
 
                 .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
 
