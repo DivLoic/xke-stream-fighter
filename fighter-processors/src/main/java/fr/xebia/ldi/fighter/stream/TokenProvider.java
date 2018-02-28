@@ -21,7 +21,7 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 /**
  * Created by loicmdivad.
  */
-public class TokkenProvider {
+public class TokenProvider {
 
     public static void main(String[] args){
 
