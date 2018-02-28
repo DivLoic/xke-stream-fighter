@@ -13,14 +13,15 @@ It's simple, expressif and declarative. Here is a simple aggregation.
 
 ```java
 StreamsBuilder builder = new StreamsBuilder();
-KTable<String, Arena> arenaTable = builder.table(/** */ "ARENAS", "ARENA-STORE");
-KStream<String, Round> winners = builder.stream(/** */ "ROUNDS");
+GlobalKTable<String, Arena> arenaTable = builder.globalTable(/** */ "ARENAS”);
+KStream<String, Round> rounds = builder.stream(/** */ "ROUNDS");
 rounds
-       .filter((String key, Round round) -> round.getGame() == StreetFighter)
-       .map((String key, Round round) -> new KeyValue<>(/*key*/, round.getWinner()))
+       .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
+       .map((String arenaId, Round round) -> (arenaId, round.getWinner()))
 
-       .join(arenaTable, Victory::new, Joined.with(/** */))
-       .groupByKey().windowedBy(window).count(/** */)
+       .join(arenaTable, (arena, player) -> arena, Victory::new)
+       .map((String key, Victory value) -> new KeyValue<>(/**new key*/, value))
+       .groupByKey().windowedBy(window).count(/** */);
 ```
 But this api won't late you directly access the state of your streaming app. 
 
