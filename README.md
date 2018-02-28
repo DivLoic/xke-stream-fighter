@@ -26,6 +26,38 @@ But this api won't late you directly access the state of your streaming app.
 
 
 ### Processor API
+```java
+public class ProcessPlayer implements Processor<String, Player> {
+
+    private ProcessorContext context;
+    private KeyValueStore<String, Arena> store;
+
+    @Override
+    public void init(ProcessorContext context) {
+        this.context = context;
+        this.store = (KeyValueStore) context.getStateStore("ARENA-STORE");
+        this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> /* do smthg*/ );
+    }
+
+    @Override
+    public void process(String key, Player value) {
+        Arena origin = null;
+        KeyValueIterator<String, Arena> iter = this.store.all();
+        
+        while (iter.hasNext()) {
+            KeyValue<String, Arena> entry = iter.next();
+            if(entry.key == key){
+                origin = entry.value;
+            }
+        }
+        iter.close();
+        
+        Victory victory = new Victory(value, origin);
+        GenericRecord victoryKey = groupedDataKey(victory);
+        context.forward(victoryKey, victory);        
+    }
+}
+```
 
 ### Token Dispenser
 
