@@ -13,14 +13,14 @@ It's simple, expressif and declarative. Here is a simple aggregation.
 
 ```java
 StreamsBuilder builder = new StreamsBuilder();
-GlobalKTable<String, Arena> arenaTable = builder.globalTable(/** */ "ARENAS”);
+GlobalKTable<String, Arena> arenaTable = builder.globalTable(/** */ "ARENAS");
 KStream<String, Round> rounds = builder.stream(/** */ "ROUNDS");
 rounds
        .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
        .map((String arenaId, Round round) -> (arenaId, round.getWinner()))
 
        .join(arenaTable, (arena, player) -> arena, Victory::new)
-       .map((String key, Victory value) -> new KeyValue<>(/**new key*/, value))
+       .map((String key, Victory value) -> new KeyValue<>(/** new key*/, value))
        .groupByKey().windowedBy(window).count(/** */);
 ```
 But this api won't late you directly access the state of your streaming app. 
@@ -28,34 +28,30 @@ But this api won't late you directly access the state of your streaming app.
 
 ### Processor API
 ```java
-public class ProcessPlayer implements Processor<String, Player> {
-
+public class ProcessorToken implements Processor<String, Round> {
     private ProcessorContext context;
-    private KeyValueStore<String, Arena> store;
-
+    private KeyValueStore<String, String> tokenStore;
     @Override
     public void init(ProcessorContext context) {
         this.context = context;
-        this.store = (KeyValueStore) context.getStateStore("ARENA-STORE");
-        this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> /* do smthg*/ );
+        this.tokenStore = (KeyValueStore) context.getStateStore("TOKEN-STORE");
+        this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> /** do smthg*/ );
     }
-
     @Override
-    public void process(String key, Player value) {
-        Arena origin = null;
-        KeyValueIterator<String, Arena> iter = this.store.all();
-        
-        while (iter.hasNext()) {
-            KeyValue<String, Arena> entry = iter.next();
-            if(entry.key == key){
-                origin = entry.value;
-            }
-        }
-        iter.close();
-        
-        Victory victory = new Victory(value, origin);
-        GenericRecord victoryKey = groupedDataKey(victory);
-        context.forward(victoryKey, victory);        
+    public void process(String key, Round value) {
+        KeyValueIterator<String, String> tokenIter = this.tokenStore.all();
+        Optional<KeyValue<String, String>> kvToken = Optional.of(tokenIter.next());
+        tokenIter.close();
+        kvToken
+                .map((token) -> new Gift(
+                        token.key,
+                        token.value,
+                        value.getArena(),
+                        value.getTerminal(),
+                        value.getGame().name(),
+                        value.getWinner().getName()
+                ))
+                .ifPresent((gift) -> this.context.forward(gift.getArena(), gift));
     }
 }
 ```

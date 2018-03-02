@@ -141,6 +141,39 @@
         "type": "long"
       }
     ]
+  },
+  {
+    "type": "record",
+    "name": "Gift",
+    "namespace": "fr.xebia.ldi.fighter.schema",
+    "fields": [
+      {
+        "name": "operation",
+        "type": "string"
+      },
+      {
+        "name": "token",
+        "type": "string"
+      },
+      {
+        "name": "arena",
+        "type": "int"
+      },
+      {
+        "name": "machine",
+        "type": "int"
+      },
+      {
+        "name": "game",
+        "type": "string"
+      },
+      {
+        "name": "character",
+        "type": "string"
+      }
+    ]
   }
+
+
 
 ]

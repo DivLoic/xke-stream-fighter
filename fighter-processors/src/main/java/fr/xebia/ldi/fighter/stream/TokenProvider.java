@@ -5,6 +5,7 @@ import com.typesafe.config.ConfigFactory;
 import fr.xebia.ldi.fighter.schema.Arena;
 import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Round;
+import fr.xebia.ldi.fighter.stream.processor.ProcessToken;
 import fr.xebia.ldi.fighter.stream.utils.EventTimeExtractor;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
@@ -16,6 +17,7 @@ import org.apache.kafka.streams.kstream.KStream;
 
 import java.util.Map;
 
+import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
@@ -23,7 +25,7 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  */
 public class TokenProvider {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         Config config = ConfigFactory.load();
         Map<String, String> props = JobConfig.mapProperties(config);
@@ -47,19 +49,16 @@ public class TokenProvider {
 
         rounds
 
-                .filter((arenaId, round) -> true) // Game
+                .filter((arenaId, round) -> round.getGame() == StreetFighter)
 
-                .filter((arenaId, round) -> true) // Combo number
+                .filter((arenaId, round) -> round.getWinner().getCombo() >= 5)
 
-                .filter((arenaId, round) -> true) // Remaining life points
+                .filter((arenaId, round) -> round.getWinner().getLife() >= 75)
 
-                .transform(null, "")
+                .through("ONE-PARTITION-WINNER-TOPIC")
 
-                .through("")
+                .transform(ProcessToken::new, "TOKEN-STORE")
 
-                .map(null)
-
-                .to("");
-
+                .to("TOKEN-PROVIDED");
     }
 }
