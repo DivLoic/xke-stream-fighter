@@ -62,6 +62,13 @@ public class Parsing {
         return record;
     }
 
+    public static GenericRecord extractConceptAndCharacter(String arenaId, Victory victory) {
+        GenericRecord record = new GenericData.Record(characterConceptKey);
+        record.put("character", victory.getCharacter().getName());
+        record.put("concept", victory.getArena().getType());
+        return record;
+    }
+
     public static KeyValue<GenericRecord, GenericRecord> parseWindowKey(Windowed<GenericRecord> windowKey, Long count) {
         String startTime = new DateTime(windowKey.window().start()).toString("HH:mm:ss");
         String concept = windowKey.key().get("concept").toString();

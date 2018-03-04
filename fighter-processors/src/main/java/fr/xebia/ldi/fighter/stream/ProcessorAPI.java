@@ -106,6 +106,5 @@ public class ProcessorAPI {
                     kafkaStreams.cleanUp();
                 })
         );
-
     }
 }

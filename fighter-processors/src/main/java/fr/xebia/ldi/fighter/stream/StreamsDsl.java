@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
-import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
@@ -72,9 +71,9 @@ public class StreamsDsl {
 
                 .map((String arenaId, Round round) -> new KeyValue<>(arenaId, round.getWinner()))
 
-                .join(arenaTable, (arena, player) -> arena, Victory::new)
+                .join(arenaTable, (arenaId, player) -> arenaId, Victory::new)
 
-                .map((String key, Victory value) -> new KeyValue<>(groupedDataKey(value), value))
+                .selectKey(Parsing::extractConceptAndCharacter)
 
                 .groupByKey().windowedBy(window).count(mat)
 
@@ -95,8 +94,5 @@ public class StreamsDsl {
                     kafkaStreams.cleanUp();
                 })
         );
-
-        //System.out.println(kafkaStreams.localThreadsMetadata());
     }
-
 }
