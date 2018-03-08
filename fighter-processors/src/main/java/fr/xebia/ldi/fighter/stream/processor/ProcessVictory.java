@@ -11,13 +11,12 @@ import org.apache.kafka.streams.state.WindowStoreIterator;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.stream.queries.QueryTask.computeWindowStart;
-import static fr.xebia.ldi.fighter.stream.utils.Parsing.groupedDataKey;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.parseWindowKey;
 
 /**
  * Created by loicmdivad.
  */
-public class ProcessVictory implements Processor {
+public class ProcessVictory implements Processor<GenericRecord, Victory> {
 
     private ProcessorContext context;
     private WindowStore<GenericRecord, Long> victoryStore;
@@ -30,16 +29,14 @@ public class ProcessVictory implements Processor {
     }
 
     @Override
-    public void process(Object key, Object value) {
+    public void process(GenericRecord key, Victory value) {
         long total;
 
         long now = this.context.timestamp();
 
         long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
-        GenericRecord genericKey = (GenericRecord) key;
-
-        WindowStoreIterator<Long> it = this.victoryStore.fetch((GenericRecord) key, windowStart, now);
+        WindowStoreIterator<Long> it = this.victoryStore.fetch(key, windowStart, now);
 
         if(it.hasNext()){
             KeyValue<Long, Long> keyValue = it.next();
@@ -48,9 +45,9 @@ public class ProcessVictory implements Processor {
             total = 1L;
         }
 
-        this.victoryStore.put(genericKey, total, windowStart);
+        this.victoryStore.put(key, total, windowStart);
 
-        KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, genericKey, total);
+        KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, key, total);
 
         context.forward(kvDisplay.key, kvDisplay.value);
     }
