@@ -3,6 +3,7 @@ package fr.xebia.ldi.fighter.stream.processor;
 import fr.xebia.ldi.fighter.schema.Arena;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 
@@ -18,7 +19,10 @@ public class ProcessArena implements Processor<String, Arena> {
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
         this.context = context;
-        this.store = (KeyValueStore) context.getStateStore("ARENA-STORE");
+
+        this.store = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
+
+        this.context.schedule(20000, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> this.store.flush());
     }
 
     @Override
@@ -33,6 +37,6 @@ public class ProcessArena implements Processor<String, Arena> {
 
     @Override
     public void close() {
-        this.store.close();
+
     }
 }
