@@ -41,7 +41,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 
     @Override
     public void process(String key, Player value) {
-        Optional<Arena> mayBeArena = Optional.of(this.arenaStore.get(key));
+        Optional<Arena> mayBeArena = Optional.ofNullable(this.arenaStore.get(key));
         
         mayBeArena.ifPresent(arena -> {
                     Victory victory = new Victory(value, arena);

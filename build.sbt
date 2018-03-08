@@ -18,7 +18,7 @@ val akkaVersion = "2.5.6"
 val reactivStream = "0.17"
 val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.4"
-val kafkaVersion = "1.0.0"
+val kafkaVersion = "1.0.1"
 val cpVerison = "4.0.0"
 val jettyVersion = "9.2.22.v20170606"
 val jacksonVersion = "2.9.1"
@@ -40,7 +40,8 @@ lazy val common = Seq(
     "ch.qos.logback" % "logback-classic" % "1.2.0" force()
   ),
 
-  logLevel in doc := Level.Error
+  logLevel in doc := Level.Error,
+  logLevel in Compile := Level.Error
 )
 
 val publishSubModule: TaskKey[Unit] = taskKey[Unit]("A docker building task grouping all the submodules")
