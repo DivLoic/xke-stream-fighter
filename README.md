@@ -28,30 +28,27 @@ But this api won't late you directly access the state of your streaming app.
 
 ### Processor API
 ```java
-public class ProcessorToken implements Processor<String, Round> {
+public class ProcessPlayer implements Processor<String, Player> {
+
     private ProcessorContext context;
-    private KeyValueStore<String, String> tokenStore;
+    private KeyValueStore<String, Arena> arenaStore;
+
     @Override
     public void init(ProcessorContext context) {
         this.context = context;
-        this.tokenStore = (KeyValueStore) context.getStateStore("TOKEN-STORE");
-        this.context.schedule(500, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> /** do smthg*/ );
+        this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
     }
+
     @Override
-    public void process(String key, Round value) {
-        KeyValueIterator<String, String> tokenIter = this.tokenStore.all();
-        Optional<KeyValue<String, String>> kvToken = Optional.of(tokenIter.next());
-        tokenIter.close();
-        kvToken
-                .map((token) -> new Gift(
-                        token.key,
-                        token.value,
-                        value.getArena(),
-                        value.getTerminal(),
-                        value.getGame().name(),
-                        value.getWinner().getName()
-                ))
-                .ifPresent((gift) -> this.context.forward(gift.getArena(), gift));
+    public void process(String key, Player value) {
+        Optional<Arena> mayBeArena = Optional.of(this.arenaStore.get(key));
+        
+        mayBeArena.ifPresent(arena -> {
+                    Victory victory = new Victory(value, arena);
+                    GenericRecord victoryKey = groupedDataKey(victory);
+                    context.forward(victoryKey, victory);
+                }
+        );
     }
 }
 ```
