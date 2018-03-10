@@ -20,14 +20,14 @@ public class ProcessArena implements Processor<String, Arena> {
     public void init(ProcessorContext context) {
         this.context = context;
 
-        this.store = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
+        // TODO 2 -> B: get the KeyValueStore as ARENA-STORE
 
-        this.context.schedule(20000, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> this.store.flush());
+        // TODO 2 -> F: flush the state store element every 10min (WALL_CLOCK_TIME)
     }
 
     @Override
     public void process(String key, Arena value) {
-        store.putIfAbsent(key, value);
+        // TODO 2 -> C: put each message in the store
     }
 
     @Override

@@ -23,9 +23,10 @@ public class ProcessPlayer implements Processor<String, Player> {
     @Override
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
-        this.context = context;
+        // TODO 3 -> B assign the context
 
-        this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
+        // TODO 3 -> C get the store ARENA-STORE from the context
+        this.arenaStore = (KeyValueStore) context.getStateStore("???");
     }
 
     @Override
@@ -37,6 +38,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 
                     Victory victory = new Victory(value, arena);
 
+                    // {"concept": ..., "character": ... }
                     GenericRecord victoryKey = groupedDataKey(victory);
 
                     context.forward(victoryKey, victory);

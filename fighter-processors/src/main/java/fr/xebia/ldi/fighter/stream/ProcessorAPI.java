@@ -2,10 +2,7 @@ package fr.xebia.ldi.fighter.stream;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import fr.xebia.ldi.fighter.schema.Arena;
-import fr.xebia.ldi.fighter.schema.Player;
-import fr.xebia.ldi.fighter.schema.Round;
-import fr.xebia.ldi.fighter.schema.Victory;
+import fr.xebia.ldi.fighter.schema.*;
 import fr.xebia.ldi.fighter.stream.processor.ProcessArena;
 import fr.xebia.ldi.fighter.stream.processor.ProcessPlayer;
 import fr.xebia.ldi.fighter.stream.processor.ProcessRound;
@@ -54,52 +51,55 @@ public class ProcessorAPI {
         SpecificAvroSerde<Victory> victorySerde = new SpecificAvroSerde<>();
         victorySerde.configure(props, false);
 
+        SpecificAvroSerde<VictoriesCount> victoryCountSerde = new SpecificAvroSerde<>();
+        victoryCountSerde.configure(props, false);
+
         Topology builder = new Topology();
 
-        StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder = Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore("ARENA-STORE"),
-                Serdes.String(),
-                arenaSerde
-        );
+        // TODO 2 -> D: create the arenaStoreBuilder as ARENA-STORE
+        //StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder =
 
-        StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
-                Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
-                avroSerde,
-                Serdes.Long()
-        );
+        // TODO 4 -> E: create the victoriesStoreBuilder as VICTORIES-STORE
+        //StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder =
 
         builder
-                .addSource("ARENAS", Serdes.String().deserializer(), arenaSerde.deserializer(), "ARENAS")
+                // TODO 1 -> A: add the ARENAS input topic as ARENAS
+                //.add
 
-                .addSource(LATEST, "ROUNDS", new EventTimeExtractor(),
-                        Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
+                // TODO 1 -> B: add the ROUNDS input topic as ROUNDS
+                //.add
 
-                .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS")
+                // TODO 1 -> C: add the ProcessRound as PROCESS-ROUND after ROUNDS
+                //.add
 
-                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS")
+                // TODO 2 -> A: add the ProcessArena as PROCESS-ARENA after ARENAS
+                //.add
 
-                .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
+                // TODO 3 -> A: add the ProcessPlayer as PROCESS-PLAYER after PROCESS-ROUND
+                //.add
 
-                .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), victorySerde.serializer(), "PROCESS-PLAYER")
+                // TODO 4 -> A: add the ProcessVictory as PROCESS-VICTORY after REPARTITIONED
+                //.add
 
-                .addSource("REPARTITIONED", avroSerde.deserializer(), victorySerde.deserializer(), "REPARTITIONED")
+                // TODO 2 -> E: grant access to arenaStoreBuilder for PROCESS-ARENA
+                // TODO 3 -> E: grant access to arenaStoreBuilder for PROCESS-PLAYER
 
-                .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
+                // TODO 4 -> F: add the victoriesStoreBuilder to the PROCESS-VICTORY processor
+                //.add
 
-                .addStateStore(arenaStoreBuilder, "PROCESS-ARENA", "PROCESS-PLAYER")
-
-                .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
-
-                .addSink("SINK", "RESULTS-PROC", avroSerde.serializer(), avroSerde.serializer(), "PROCESS-VICTORY");
+                // TODO: update the final sink
+                .addSink("SINK", "RESULTS-PROC", Serdes.String().serializer(), roundSerde.serializer(), "PROCESS-ROUND");
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
         kafkaStreams.cleanUp();
 
         kafkaStreams.start();
+/*
 
         Query.start(kafkaStreams, "VICTORIES-STORE", config);
 
+*/
         Runtime.getRuntime().addShutdownHook(
                 new Thread(() -> {
                     kafkaStreams.close();
