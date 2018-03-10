@@ -76,34 +76,34 @@ services:
       SCHEMA_REGISTRY: http://registry:8081/
       TOPIC_LIST: "ARENAS:1:1,ROUNDS:1:1,REPARTITIONED:1:1,TOKKENS:1:1,RESULTS-PROC:1:1,RESULTS-DSL:1:1"
 
-  influxdb:
-    image: influxdb:1.4-alpine
-    hostname: influxdb
-    ports:
-      - "8086:8086"
-      - "8083:8083"
-    environment:
-      INFLUXDB_DB: kafka
-      INFLUXDB_USER: kafka
-      INFLUXDB_USER_PASSWORD: kafka
-
-  jmxtrans:
-    image: jmxtrans/jmxtrans
-    hostname: jmxtrans
-    environment:
-      SECONDS_BETWEEN_RUNS: 5
-    depends_on:
-      - influxdb
-    volumes:
-      - ./fighter-processors/src/main/resources/:/var/lib/jmxtrans
-
-  chronograf:
-    image: chronograf:1.4-alpine
-    hostname: chronograf
-    ports:
-      - "8888:8888"
-    depends_on:
-          - influxdb
+#  influxdb:
+#    image: influxdb:1.4-alpine
+#    hostname: influxdb
+#    ports:
+#      - "8086:8086"
+#      - "8083:8083"
+#    environment:
+#      INFLUXDB_DB: kafka
+#      INFLUXDB_USER: kafka
+#      INFLUXDB_USER_PASSWORD: kafka
+#
+#  jmxtrans:
+#    image: jmxtrans/jmxtrans
+#    hostname: jmxtrans
+#    environment:
+#      SECONDS_BETWEEN_RUNS: 5
+#    depends_on:
+#      - influxdb
+#    volumes:
+#      - ./fighter-processors/src/main/resources/:/var/lib/jmxtrans
+#
+#  chronograf:
+#    image: chronograf:1.4-alpine
+#    hostname: chronograf
+#    ports:
+#      - "8888:8888"
+#    depends_on:
+#          - influxdb
 
 #  processors:
 #    image: fighter-processors:0.1.0-SNAPSHOT
