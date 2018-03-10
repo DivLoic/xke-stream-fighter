@@ -2,14 +2,14 @@
 [![Build Status](https://travis-ci.org/DivLoic/xke-stream-fighter.svg?branch=master)](https://travis-ci.org/DivLoic/xke-stream-fighter)
 
 This project is related to the talk: [**Processor API**](#/). 
-It consist of a few sample of examples demonstrate how the *Streams DSL*,
+It gathers a few code examples showing how the *Streams DSL*,
 from [Kafka Streams](https://kafka.apache.org/documentation/streams/),
-relies on a lower level api and why this api is expose. While describing
+relies on a lower level api and why this api is exposed. While describing
 the library, this modules shows a few stream processing concepts. 
 
 ### Stream DSL
 This higher level API brings the `KStream` & `KTable` abstractions.
-It's simple, expressif and declarative. Here is a simple aggregation.
+It's simple, expressive and declarative. Here is a simple aggregation.
 
 ```java
 StreamsBuilder builder = new StreamsBuilder();
