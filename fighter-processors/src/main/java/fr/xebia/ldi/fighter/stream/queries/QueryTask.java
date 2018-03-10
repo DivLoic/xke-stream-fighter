@@ -8,7 +8,6 @@ import org.apache.kafka.streams.errors.InvalidStateStoreException;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyWindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +23,7 @@ import java.util.Objects;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static fr.xebia.ldi.fighter.stream.queries.QueryUtil.BORDER_LEFT;
 import static fr.xebia.ldi.fighter.stream.utils.Parsing.generateWindowKeys;
 
 /**
@@ -59,14 +55,13 @@ public class QueryTask extends TimerTask {
     @Override
     public void run() {
         long now = System.currentTimeMillis();
-        //long since = now - TimeUnit.SECONDS.toMillis(15);
         long windowstart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
         String[] lines = generateWindowKeys("PRO")
                 .map((GenericRecord key) -> querying(key, windowstart, now, windowStore))
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparingLong(VictoriesCount::getVictories).reversed())
-                .map(this::writeTable).toArray(String[]::new);
+                .map(QueryUtil::line).toArray(String[]::new);
 
         if(lines.length != 0){
             printLayout(this.outpath, QueryUtil::header);
@@ -107,23 +102,6 @@ public class QueryTask extends TimerTask {
             iterator.close();
         }
         return victoriesCount;
-    }
-
-    /**
-     * Format a line of the table from a VictoriesCount
-     * @param count VictoriesCount value extracted from a window store
-     * @return One line of the table
-     */
-    private String writeTable(VictoriesCount count){
-        return "| " + Stream.of(
-                count.getConcept(),
-                new DateTime(count.getWindowStart()).toString("HH:mm:ss"),
-                count.getCharacter(),
-                count.getVictories().toString()
-        )
-                .map(Object::toString)
-                .map((String cell) -> String.format("%1$-" + 12 + "s", cell))
-                .collect((Collectors.joining(BORDER_LEFT))) + "| ";
     }
 
     private void printLayout(String filePath, Callable<String> layout){
