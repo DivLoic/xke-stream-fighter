@@ -1,5 +1,5 @@
 import com.tapad.docker.DockerComposePlugin.autoImport.{composeFile, dockerImageCreationTask}
-import sbt.Keys.version
+import sbt.Keys.{publishLocal, version}
 
 name := "xke-stream-fighter"
 
@@ -14,14 +14,12 @@ organizationHomepage := Some(url("http://blog.xebia.fr"))
 
 coverageEnabled := true
 
-val akkaVersion = "2.5.6"
-val reactivStream = "0.17"
+val akkaVersion = "2.5.9"
+val reactivStream = "0.19"
 val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.4"
 val kafkaVersion = "1.0.1"
 val cpVerison = "4.0.0"
-val jettyVersion = "9.2.22.v20170606"
-val jacksonVersion = "2.9.1"
 
 lazy val common = Seq(
 
@@ -40,19 +38,16 @@ lazy val common = Seq(
     "ch.qos.logback" % "logback-classic" % "1.2.0" force()
   ),
 
-  logLevel in doc := Level.Error,
-  logLevel in Compile := Level.Error
+  logLevel in doc := Level.Error
 )
 
-val publishSubModule: TaskKey[Unit] = taskKey[Unit]("A docker building task grouping all the submodules")
-publishSubModule := {}
-publishSubModule <<= publishSubModule dependsOn (
-  Seq(
-    `fighter-actors`,
-    `fighter-processors`
-  ).map(
-    module => (publishLocal in Docker) in module): _*
-  )
+val publishSubModule: TaskKey[Unit] =
+  taskKey[Unit]("Submodules docker building task")
+
+publishSubModule := {
+  (publishLocal in Docker in `fighter-actors`).value
+  (publishLocal in Docker in `fighter-processors`).value
+}
 
 lazy val `xke-stream-fighter` = (project in file("."))
   .aggregate(`fighter-processors`, `fighter-actors`)
@@ -89,7 +84,7 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-kafka" % "0.18",
+    "com.typesafe.akka" %% "akka-stream-kafka" % "0.18" exclude("org.apache.kafka", "kafka-clients"),
     "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
   )
 )
@@ -131,7 +126,3 @@ lazy val avroGeneratorSettings = Seq(
 
   sourceDirectory in AvroConfig := (resourceDirectory in Compile).value / "avro"
 )
-
-
-
-
