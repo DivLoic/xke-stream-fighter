@@ -17,10 +17,10 @@ GlobalKTable<String, Arena> arenaTable = builder.globalTable(/** */ "ARENAS");
 KStream<String, Round> rounds = builder.stream(/** */ "ROUNDS");
 rounds
        .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
-       .map((String arenaId, Round round) -> (arenaId, round.getWinner()))
+       .map((String arenaId, Round round) -> new KeyValue<>(arenaId, round.getWinner()))
 
        .join(arenaTable, (arena, player) -> arena, Victory::new)
-       .map((String key, Victory value) -> new KeyValue<>(/** new key*/, value))
+       .selectKey(Parsing::extractConceptAndCharacter)
        .groupByKey().windowedBy(window).count(/** */);
 ```
 But this api won't late you directly access the state of your streaming app. 
@@ -53,7 +53,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 }
 ```
 
-### Token Dispenser
+### Token Provider
 
 ## tl;dr
 
