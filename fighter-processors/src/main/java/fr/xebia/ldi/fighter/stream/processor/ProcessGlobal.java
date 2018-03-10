@@ -26,6 +26,7 @@ public class ProcessGlobal implements Processor<String, Arena> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void punctuate(long timestamp) {
 
     }

@@ -28,6 +28,7 @@ public class ProcessRound implements Processor<String, Round> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void punctuate(long timestamp) {
 
     }

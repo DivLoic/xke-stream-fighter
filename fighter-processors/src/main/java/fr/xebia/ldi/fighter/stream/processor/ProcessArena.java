@@ -31,6 +31,7 @@ public class ProcessArena implements Processor<String, Arena> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void punctuate(long timestamp) {
 
     }

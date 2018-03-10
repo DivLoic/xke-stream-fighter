@@ -44,6 +44,7 @@ public class ProcessToken implements Transformer<String, Round, KeyValue<Integer
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public KeyValue<Integer, Gift> punctuate(long timestamp) {
         return null;
     }

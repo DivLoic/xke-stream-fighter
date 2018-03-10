@@ -45,7 +45,9 @@ public class ProcessPlayer implements Processor<String, Player> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void punctuate(long timestamp) {
+
     }
 
     @Override

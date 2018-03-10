@@ -77,7 +77,8 @@ lazy val kafkaDependencies = Seq(
     "org.apache.kafka" % "kafka-streams" % kafkaVersion,
     "io.confluent" % "kafka-avro-serializer" % cpVerison,
     "io.confluent" % "kafka-streams-avro-serde" % cpVerison
-  )
+
+  ).map(_ exclude("org.slf4j", "slf4j-log4j12"))
 )
 
 lazy val akkaDependencies = Seq(
