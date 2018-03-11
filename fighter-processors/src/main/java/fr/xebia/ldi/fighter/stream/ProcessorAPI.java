@@ -36,8 +36,11 @@ public class ProcessorAPI {
         Config config = ConfigFactory.load();
         Map<String, String> props = JobConfig.mapProperties(config);
 
-        GenericAvroSerde avroSerde = new GenericAvroSerde();
-        avroSerde.configure(props, true);
+        GenericAvroSerde keyAvroSerde = new GenericAvroSerde();
+        keyAvroSerde.configure(props, true);
+
+        GenericAvroSerde valueAvroSerde = new GenericAvroSerde();
+        valueAvroSerde.configure(props, false);
 
         SpecificAvroSerde<Round> roundSerde = new SpecificAvroSerde<>();
         roundSerde.configure(props, false);
@@ -54,13 +57,16 @@ public class ProcessorAPI {
         SpecificAvroSerde<VictoriesCount> victoryCountSerde = new SpecificAvroSerde<>();
         victoryCountSerde.configure(props, false);
 
+        StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
+                Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
+                keyAvroSerde,
+                Serdes.Long()
+        );
+
         Topology builder = new Topology();
 
         // TODO 2 -> D: create the arenaStoreBuilder as ARENA-STORE
         //StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder =
-
-        // TODO 4 -> E: create the victoriesStoreBuilder as VICTORIES-STORE
-        //StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder =
 
         builder
                 // TODO 1 -> A: add the ARENAS input topic as ARENAS
@@ -84,11 +90,11 @@ public class ProcessorAPI {
                 // TODO 2 -> E: grant access to arenaStoreBuilder for PROCESS-ARENA
                 // TODO 3 -> E: grant access to arenaStoreBuilder for PROCESS-PLAYER
 
-                // TODO 4 -> F: add the victoriesStoreBuilder to the PROCESS-VICTORY processor
+                // TODO 4 -> E: add the victoriesStoreBuilder to the PROCESS-VICTORY processor
                 //.add
 
                 // TODO: update the final sink
-                .addSink("SINK", "RESULTS-PROC", Serdes.String().serializer(), roundSerde.serializer(), "PROCESS-ROUND");
+                .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY");
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
