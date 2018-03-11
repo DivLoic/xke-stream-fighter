@@ -39,8 +39,11 @@ public class ProcessorAPI {
         Config config = ConfigFactory.load();
         Map<String, String> props = JobConfig.mapProperties(config);
 
-        GenericAvroSerde avroSerde = new GenericAvroSerde();
-        avroSerde.configure(props, true);
+        GenericAvroSerde keyAvroSerde = new GenericAvroSerde();
+        keyAvroSerde.configure(props, true);
+
+        GenericAvroSerde valueAvroSerde = new GenericAvroSerde();
+        valueAvroSerde.configure(props, false);
 
         SpecificAvroSerde<Round> roundSerde = new SpecificAvroSerde<>();
         roundSerde.configure(props, false);
@@ -64,7 +67,7 @@ public class ProcessorAPI {
 
         StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
                 Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
-                avroSerde,
+                keyAvroSerde,
                 Serdes.Long()
         );
 
@@ -80,9 +83,9 @@ public class ProcessorAPI {
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
-                .addSink("REPARTITION", "REPARTITIONED", avroSerde.serializer(), victorySerde.serializer(), "PROCESS-PLAYER")
+                .addSink("REPARTITION", "REPARTITIONED", keyAvroSerde.serializer(), victorySerde.serializer(), "PROCESS-PLAYER")
 
-                .addSource("REPARTITIONED", avroSerde.deserializer(), victorySerde.deserializer(), "REPARTITIONED")
+                .addSource("REPARTITIONED", keyAvroSerde.deserializer(), victorySerde.deserializer(), "REPARTITIONED")
 
                 .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
 
@@ -90,7 +93,7 @@ public class ProcessorAPI {
 
                 .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
 
-                .addSink("SINK", "RESULTS-PROC", avroSerde.serializer(), avroSerde.serializer(), "PROCESS-VICTORY");
+                .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY");
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
