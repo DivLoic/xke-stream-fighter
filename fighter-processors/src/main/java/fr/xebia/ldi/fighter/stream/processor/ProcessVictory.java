@@ -36,6 +36,7 @@ public class ProcessVictory implements Processor<GenericRecord, Victory> {
         long now = 0;
 
         long windowStart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
+        // 11:51:48 ---> 11:51:45
 
         // TODO 4 -> C: fetch the window from the victoryStore
         WindowStoreIterator<Long> it = null;
@@ -48,11 +49,9 @@ public class ProcessVictory implements Processor<GenericRecord, Victory> {
         }
 
         // TODO 4 -> D: put the new count into the victoryStore store
-        //.put(???, ???, ???)
+        //this.victoryStore.put(???, ???, ???)
 
         // PRESENTATION PURPOSE ONLY
-        this.victoryStore.put(key, total, windowStart);
-
         KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, key, total);
 
         context.forward(kvDisplay.key, kvDisplay.value);
