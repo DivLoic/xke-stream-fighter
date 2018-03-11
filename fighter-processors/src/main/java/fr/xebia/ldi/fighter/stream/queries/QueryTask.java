@@ -150,6 +150,4 @@ public class QueryTask extends TimerTask {
             }
         }
     }
-
-
 }

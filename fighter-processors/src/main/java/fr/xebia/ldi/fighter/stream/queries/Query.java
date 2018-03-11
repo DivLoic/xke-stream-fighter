@@ -18,15 +18,9 @@ public class Query {
 
             ReadOnlyWindowStore<GenericRecord, Long> window = QueryTask.waitUntilStoreIsQueryable(store, kafkaStreams);
 
-            timer.schedule(new QueryTask(window, config.getString("tmp.output-table")), 0, 500);
+            timer.schedule(new QueryTask(window, config.getString("tmp.output-table")), 1000, 100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
 }
