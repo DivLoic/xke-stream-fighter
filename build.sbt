@@ -23,7 +23,7 @@ val cpVerison = "4.0.0"
 
 lazy val common = Seq(
 
-  version := "0.1.0-SNAPSHOT",
+  version := "0.1.0",
 
   isSnapshot := false,
 

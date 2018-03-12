@@ -67,7 +67,7 @@ services:
 #      KAFKA_REST_PROXY_URL: http://rest-proxy:8082
 
   actors:
-    image: fighter-actors:0.1.0-SNAPSHOT
+    image: fighter-actors:0.1.0
     hostname: actors
     depends_on:
       - registry
@@ -106,7 +106,7 @@ services:
 #          - influxdb
 
 #  processors:
-#    image: fighter-processors:0.1.0-SNAPSHOT
+#    image: fighter-processors:0.1.0
 #    entrypoint: bin/streams-dsl
 #    hostname: processors
 #    depends_on:
