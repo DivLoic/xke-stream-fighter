@@ -7,6 +7,20 @@ from [Kafka Streams](https://kafka.apache.org/documentation/streams/),
 relies on a lower level api and why this api is exposed. While describing
 the library, this modules shows a few stream processing concepts. 
 
+## tl;dr
+
+Prerequisites: 
+- sbt
+- scala
+- docker
+```bash
+git clone git@github.com:DivLoic/xke-stream-fighter.git
+cd xke-stream-fighter
+sbt dockerComposeUp
+```
+This will trigger a set of containers including: the confluent stacks, a dataset generator
+and the streaming application example. 
+
 ### Stream DSL
 This higher level API brings the `KStream` & `KTable` abstractions.
 It's simple, expressive and declarative. Here is a simple aggregation.
@@ -54,18 +68,20 @@ public class ProcessPlayer implements Processor<String, Player> {
 ```
 
 ### Token Provider
-
-## tl;dr
-
-Prerequisites: 
-- sbt
-- scala
-- docker
-```bash
-git clone git@github.com:DivLoic/xke-stream-fighter.git
-cd xke-stream-fighter
-sbt dockerComposeUp
+Finally, the best part of using the Processor API appears when we combine 
+it with the Stream DSL high level API. The `.transform()` method allow us to 
+use Processor within a Kstream. 
+```java
+StreamsBuilder builder = new StreamsBuilder();
+KStream<String, Round> rounds = builder
+        .stream("ROUNDS", Consumed.with(Serdes.String(), roundSerde, new EventTimeExtractor(), LATEST));
+rounds
+        .filter((arenaId, round) -> round.getGame() == StreetFighter)
+        .filter((arenaId, round) -> round.getWinner().getCombo() >= 5)
+        .filter((arenaId, round) -> round.getWinner().getLife() >= 75)
+        .through("ONE-PARTITION-WINNER-TOPIC")
+        .transform(ProcessToken::new, "TOKEN-STORE")
+        .to("TOKEN-PROVIDED");
 ```
-This will trigger a set of containers including: the confluent stacks, a dataset generator
-and the streaming application example. 
+
 
