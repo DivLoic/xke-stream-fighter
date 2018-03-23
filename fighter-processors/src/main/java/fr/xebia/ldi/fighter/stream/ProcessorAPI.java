@@ -72,14 +72,14 @@ public class ProcessorAPI {
         );
 
         builder
-                .addSource("ARENAS", Serdes.String().deserializer(), arenaSerde.deserializer(), "ARENAS")
+                .addSource("ARENAS-SRC", Serdes.String().deserializer(), arenaSerde.deserializer(), "ARENAS")
 
-                .addSource(LATEST, "ROUNDS", new EventTimeExtractor(),
+                .addSource(LATEST, "ROUNDS-SRC", new EventTimeExtractor(),
                         Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
 
-                .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS")
+                .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS-SRC")
 
-                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS")
+                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS-SRC")
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
