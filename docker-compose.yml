@@ -56,16 +56,6 @@ services:
       KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
       KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,DELETE,OPTIONS'
 
-#  landoop:
-#    image: landoop/kafka-topics-ui:latest
-#    hostname: landoop
-#    depends_on:
-#      - rest-proxy
-#    ports:
-#      - "8000:8000"
-#    environment:
-#      KAFKA_REST_PROXY_URL: http://rest-proxy:8082
-
   actors:
     image: fighter-actors:0.1.0-SNAPSHOT
     hostname: actors
@@ -76,42 +66,15 @@ services:
       SCHEMA_REGISTRY: http://registry:8081/
       TOPIC_LIST: "ARENAS:1:1,ROUNDS:1:1,REPARTITIONED:1:1,TOKKENS:1:1,RESULTS-PROC:1:1,RESULTS-DSL:1:1"
 
-#  influxdb:
-#    image: influxdb:1.4-alpine
-#    hostname: influxdb
-#    ports:
-#      - "8086:8086"
-#      - "8083:8083"
-#    environment:
-#      INFLUXDB_DB: kafka
-#      INFLUXDB_USER: kafka
-#      INFLUXDB_USER_PASSWORD: kafka
-#
-#  jmxtrans:
-#    image: jmxtrans/jmxtrans
-#    hostname: jmxtrans
-#    environment:
-#      SECONDS_BETWEEN_RUNS: 5
-#    depends_on:
-#      - influxdb
-#    volumes:
-#      - ./fighter-processors/src/main/resources/:/var/lib/jmxtrans
-#
-#  chronograf:
-#    image: chronograf:1.4-alpine
-#    hostname: chronograf
-#    ports:
-#      - "8888:8888"
-#    depends_on:
-#          - influxdb
-
-#  processors:
-#    image: fighter-processors:0.1.0-SNAPSHOT
-#    entrypoint: bin/streams-dsl
-#    hostname: processors
-#    depends_on:
-#      - actors
-#    environment:
-#      APPID: XKE-KSTREAM-DSL
-#      SCHEMA_REGISTRY: http://registry:8081/
-#      KAFKA_BROKERS: kafka:9092
+  processors:
+    image: fighter-processors:0.1.0-SNAPSHOT
+    entrypoint: bin/streams-dsl
+    hostname: processors
+    depends_on:
+      - actors
+    environment:
+      APPID: XKE-KSTREAM-DSL
+      SCHEMA_REGISTRY: http://registry:8081/
+      KAFKA_BROKERS: kafka:9092
+    volumes:
+      - ./fighter-processors/src/main/resources/scripts:/opt/docker/scripts/
