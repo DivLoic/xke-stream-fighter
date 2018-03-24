@@ -18,8 +18,24 @@ git clone git@github.com:DivLoic/xke-stream-fighter.git
 cd xke-stream-fighter
 sbt dockerComposeUp
 ```
-This will trigger a set of containers including: the confluent stacks, a dataset generator
-and the streaming application example. 
+This will trigger a set of containers including: the confluent stack, a dataset generator
+and the streaming application example. Start a consumer to see the input stream:
+```bash
+kafka-avro-console-consumer --bootstrap-server localhost:9092  --topic ROUNDS
+```
+
+The output stream represent the append log of the aggregation and can be seen with the following command:
+```bash
+kafka-avro-console-consumer --bootstrap-server localhost:9092 --topic RESULTS-DSL
+```
+
+The interractives queries are dumped in a file inside of the stream app container.
+Given the project name `projectId` provided by the docker-compose plugin you can watch this file:
+```bash
+docker-compose -p <projectId> exec processors scripts/watch-interactive-queries.sh DSL
+```
+
+## Motivation
 
 ### Stream DSL
 This higher level API brings the `KStream` & `KTable` abstractions.
@@ -38,7 +54,6 @@ rounds
        .groupByKey().windowedBy(window).count(/** */);
 ```
 But this api won't late you directly access the state of your streaming app. 
-
 
 ### Processor API
 ```java
