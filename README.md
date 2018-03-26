@@ -10,9 +10,10 @@ the library, this modules shows a few stream processing concepts.
 ## tl;dr
 
 Prerequisites: 
-- sbt
-- scala
-- docker
+- sbt [:arrow_down:](https://www.scala-sbt.org/download.html)
+- scala [:arrow_down:](http://www.scala-lang.org/download/)
+- docker [:arrow_down:](https://docs.docker.com/install/)
+- confluent [:arrow_down:](https://www.confluent.io/download/)
 ```bash
 git clone git@github.com:DivLoic/xke-stream-fighter.git
 cd xke-stream-fighter
@@ -21,7 +22,7 @@ sbt dockerComposeUp
 This will trigger a set of containers including: the confluent stack, a dataset generator
 and the streaming application example. Start a consumer to see the input stream:
 ```bash
-kafka-avro-console-consumer --bootstrap-server localhost:9092  --topic ROUNDS
+kafka-avro-console-consumer --bootstrap-server localhost:9092 --topic ROUNDS
 ```
 
 The output stream represent the append log of the aggregation and can be seen with the following command:
@@ -38,7 +39,7 @@ docker-compose -p <projectId> exec processors scripts/watch-interactive-queries.
 ## Motivation
 
 ### Stream DSL
-This higher level API brings the `KStream` & `KTable` abstractions.
+The high level API brings the `KStream` & `KTable` abstractions.
 It's simple, expressive and declarative. Here is a simple aggregation.
 
 ```java
@@ -53,9 +54,11 @@ rounds
        .selectKey(Parsing::extractConceptAndCharacter)
        .groupByKey().windowedBy(window).count(/** */);
 ```
-But this api won't late you directly access the state of your streaming app. 
+But this api won't let you access the states stores directly. 
 
 ### Processor API
+By implementing a processor you have access to a processor context, containing a lot
+of metadata and services.
 ```java
 public class ProcessPlayer implements Processor<String, Player> {
 
