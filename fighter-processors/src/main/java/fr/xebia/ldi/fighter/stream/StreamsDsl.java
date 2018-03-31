@@ -39,7 +39,7 @@ public class StreamsDsl {
     public static void main(String[] args){
 
         Config config = ConfigFactory.load();
-        Map<String, String> props = JobConfig.mapProperties(config);
+        Map<String, Object> props = JobConfig.avroProperties(config);
 
         GenericAvroSerde avroSerde = new GenericAvroSerde();
         avroSerde.configure(props, true);
@@ -83,6 +83,8 @@ public class StreamsDsl {
         KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), JobConfig.properties(config));
 
         kafkaStreams.cleanUp();
+
+
 
         kafkaStreams.start();
 

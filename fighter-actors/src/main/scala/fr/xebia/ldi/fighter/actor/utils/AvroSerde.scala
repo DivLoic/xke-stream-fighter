@@ -14,12 +14,11 @@ import scala.util.{Failure, Success, Try}
   */
 object AvroSerde {
 
-  val kafkaClientKey = "akka.kafka.producer.kafka-clients"
   val registryKey = "schema.registry.url"
   lazy val logger: Logger = LoggerFactory.getLogger(getClass)
 
   def genericSerdeConfigure(conf: Config): GenericAvroSerde = {
-    val prop = Map(registryKey -> conf.getConfig(kafkaClientKey).getString(registryKey)).asJava
+    val prop = Map(registryKey -> conf.getConfig("confluent").getString(registryKey)).asJava
     val genericAvroSerde = new GenericAvroSerde()
     genericAvroSerde.configure(prop, false)
     genericAvroSerde
@@ -27,7 +26,7 @@ object AvroSerde {
 
   @tailrec
   def retryCallSchemaRegistry(conf: Config, countdown: Int): Try[String] = {
-    val registryUrl = conf.getString(s"$kafkaClientKey.$registryKey")
+    val registryUrl = conf.getString(s"confluent.$registryKey")
     Try(scala.io.Source.fromURL(registryUrl).mkString) match {
       case result: Success[String] =>
         logger info "Successfully call the Schema Registry."

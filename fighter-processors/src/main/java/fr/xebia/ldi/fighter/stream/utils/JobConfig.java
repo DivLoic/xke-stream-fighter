@@ -5,6 +5,7 @@ import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import org.apache.kafka.streams.StreamsConfig;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -21,8 +22,7 @@ public class JobConfig {
         prop.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
         prop.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, GenericAvroSerde.class);
         prop.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100);
-        prop.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
-                config.getString("kafka-clients.schema.registry.url"));
+        prop.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, config.getString("confluent.schema.registry.url"));
         return prop;
     }
 
@@ -35,12 +35,10 @@ public class JobConfig {
         return map;
     }
 
-    public static final GenericAvroSerde configureAvroSerde(Config config){
-        GenericAvroSerde serde = new GenericAvroSerde();
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, config.getString("kafka-clients"));
-        serde.configure(map, false);
-        return serde;
+    public static final Map<String, Object> avroProperties(Config config){
+        return Collections.singletonMap(
+                AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                config.getString("confluent.schema.registry.url")
+        );
     }
-
 }
