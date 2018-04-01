@@ -36,6 +36,14 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  */
 public class StreamsDsl {
 
+    protected static void delayProcessing(long timeout){
+        try {
+            TimeUnit.SECONDS.sleep(timeout);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args){
 
         Config config = ConfigFactory.load();
@@ -80,11 +88,11 @@ public class StreamsDsl {
                 // PRESENTATION PURPOSE ONLY
                 .toStream().map(Parsing::parseWindowKey).to("RESULTS-DSL");
 
+        delayProcessing(config.getLong("start-lag"));
+
         KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), JobConfig.properties(config));
 
         kafkaStreams.cleanUp();
-
-
 
         kafkaStreams.start();
 

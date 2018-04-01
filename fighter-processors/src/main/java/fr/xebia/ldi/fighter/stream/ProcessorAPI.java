@@ -27,6 +27,7 @@ import org.apache.kafka.streams.state.WindowStore;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static fr.xebia.ldi.fighter.stream.StreamsDsl.delayProcessing;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
@@ -94,6 +95,8 @@ public class ProcessorAPI {
                 .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
 
                 .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY");
+
+        delayProcessing(5L);
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
