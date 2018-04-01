@@ -25,7 +25,7 @@ while getopts ':vh' opt; do
           exit 0
           ;;
 		\?)
-		  echo "Option: -${opt} inconnue.\n" >&2
+		  echo "Unknown option: -${opt} \n" >&2
 		  usage
 		  exit 1
 		;;
@@ -37,4 +37,4 @@ if [ -z $APPID ]; then
     exit 1
 fi
 
-watch -n 0.2 "cat /tmp/XKE-KSTREAM-$APPID-TABLE.txt"
+watch -t -n 0.2 "cat /tmp/XKE-KSTREAM-$APPID-TABLE.txt"
