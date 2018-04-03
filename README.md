@@ -10,10 +10,10 @@ the library, this modules shows a few stream processing concepts.
 ## tl;dr
 
 Prerequisites: 
-- sbt [:arrow_down:](https://www.scala-sbt.org/download.html)
-- scala [:arrow_down:](http://www.scala-lang.org/download/)
-- docker [:arrow_down:](https://docs.docker.com/install/)
-- confluent [:arrow_down:](https://www.confluent.io/download/)
+- [:arrow_down:](https://www.scala-sbt.org/download.html) sbt
+- [:arrow_down:](http://www.scala-lang.org/download/) scala
+- [:arrow_down:](https://docs.docker.com/install/) docker
+- [:arrow_down:](https://www.confluent.io/download/) confluent
 ```bash
 git clone git@github.com:DivLoic/xke-stream-fighter.git
 cd xke-stream-fighter
@@ -35,8 +35,14 @@ Given the project name `projectId` provided by the docker-compose plugin you can
 ```bash
 docker-compose -p <projectId> exec processors scripts/watch-interactive-queries.sh DSL
 ```
+[![asciicast](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX.png)](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX)
 
 ## Motivation
+
+Despite the importance of the processor api in the kafka-streams library, their
+no mush resources (talk, examples, demos ...) about it. This modules were created
+to demonstrate most of his features. It's based on the [confluent documentation](
+https://docs.confluent.io/current/streams/developer-guide/processor-api.html).
 
 ### Stream DSL
 The high level API brings the `KStream` & `KTable` abstractions.
@@ -44,15 +50,15 @@ It's simple, expressive and declarative. Here is a simple aggregation.
 
 ```java
 StreamsBuilder builder = new StreamsBuilder();
-GlobalKTable<String, Arena> arenaTable = builder.globalTable(/** */ "ARENAS");
-KStream<String, Round> rounds = builder.stream(/** */ "ROUNDS");
+GlobalKTable<String, Arena> arenaTable = builder.globalTable(/* */ "ARENAS");
+KStream<String, Round> rounds = builder.stream(/* */ "ROUNDS");
 rounds
        .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
        .map((String arenaId, Round round) -> new KeyValue<>(arenaId, round.getWinner()))
 
        .join(arenaTable, (arena, player) -> arena, Victory::new)
        .selectKey(Parsing::extractConceptAndCharacter)
-       .groupByKey().windowedBy(window).count(/** */);
+       .groupByKey().windowedBy(window).count(/* */);
 ```
 But this api won't let you access the states stores directly. 
 
