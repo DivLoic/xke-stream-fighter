@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
+import static fr.xebia.ldi.fighter.stream.utils.JobScheduling.delayProcessing;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
@@ -36,13 +37,7 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  */
 public class StreamsDsl {
 
-    protected static void delayProcessing(long timeout){
-        try {
-            TimeUnit.SECONDS.sleep(timeout);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public static void main(String[] args){
 

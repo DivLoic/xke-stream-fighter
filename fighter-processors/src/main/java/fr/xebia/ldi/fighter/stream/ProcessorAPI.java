@@ -27,7 +27,7 @@ import org.apache.kafka.streams.state.WindowStore;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static fr.xebia.ldi.fighter.stream.StreamsDsl.delayProcessing;
+import static fr.xebia.ldi.fighter.stream.utils.JobScheduling.delayProcessing;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
 
 /**
