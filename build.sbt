@@ -35,8 +35,9 @@ lazy val common = Seq(
     "com.typesafe" % "config" % "1.3.1",
     "joda-time" % "joda-time" % "2.9.7",
     "com.sksamuel.avro4s" % "avro4s-core_2.12" % "1.8.0",
-    "ch.qos.logback" % "logback-classic" % "1.2.0" force()
-  ),
+    "ch.qos.logback" % "logback-classic" % "1.2.3" force(),
+    "com.github.danielwegener" % "logback-kafka-appender" % "0.2.0-RC1"
+),
 
   logLevel in doc := Level.Error
 )
@@ -77,7 +78,6 @@ lazy val kafkaDependencies = Seq(
     "org.apache.kafka" % "kafka-streams" % kafkaVersion,
     "io.confluent" % "kafka-avro-serializer" % cpVerison,
     "io.confluent" % "kafka-streams-avro-serde" % cpVerison
-
   ).map(_ exclude("org.slf4j", "slf4j-log4j12"))
 )
 
