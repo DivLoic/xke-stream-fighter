@@ -22,12 +22,20 @@ public class ProcessArena implements Processor<String, Arena> {
 
         this.store = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
 
-        this.context.schedule(20000, PunctuationType.WALL_CLOCK_TIME, (timestamp) -> this.store.flush());
+        this.context.schedule(3000, PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
+            this.store.all().forEachRemaining((arenaKeyValue) ->
+                    this.context.forward(
+                            String.format("(%tc)  %-15S :", timestamp, arenaKeyValue.value.getName()),
+                            arenaKeyValue.value.getTerminals().toString(),
+                            "TERMINALS-COUNT"
+                    )
+            )
+        );
     }
 
     @Override
     public void process(String key, Arena value) {
-        store.putIfAbsent(key, value);
+        store.put(key, value);
     }
 
     @Override

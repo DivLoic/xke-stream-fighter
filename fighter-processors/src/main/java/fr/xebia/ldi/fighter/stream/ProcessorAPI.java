@@ -96,6 +96,9 @@ public class ProcessorAPI {
 
                 .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY");
 
+        // PRESENTATION PURPOSE ONLY
+        builder.addSink("TERMINALS-COUNT", "EQUIPMENTS", Serdes.String().serializer(), Serdes.String().serializer(), "PROCESS-ARENA");
+
         delayProcessing(5L);
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));

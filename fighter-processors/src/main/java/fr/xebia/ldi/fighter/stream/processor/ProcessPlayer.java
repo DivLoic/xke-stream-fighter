@@ -54,5 +54,4 @@ public class ProcessPlayer implements Processor<String, Player> {
     public void close() {
 
     }
-
 }

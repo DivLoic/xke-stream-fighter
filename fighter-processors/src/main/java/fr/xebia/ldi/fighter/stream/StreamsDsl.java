@@ -37,8 +37,6 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  */
 public class StreamsDsl {
 
-
-
     public static void main(String[] args){
 
         Config config = ConfigFactory.load();
