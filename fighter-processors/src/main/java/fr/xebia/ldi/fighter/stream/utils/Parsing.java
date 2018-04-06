@@ -48,7 +48,7 @@ public class Parsing {
                 .map((String character) -> generateWindowKey(character, concept));
     }
 
-    private static GenericRecord generateWindowKey(String character, String concept) {
+    public static GenericRecord generateWindowKey(String character, String concept) {
         GenericRecord record = new GenericData.Record(characterConceptKey);
         record.put("character", character);
         record.put("concept", concept);

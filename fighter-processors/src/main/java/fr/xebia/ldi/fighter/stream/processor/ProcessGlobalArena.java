@@ -8,7 +8,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 /**
  * Created by loicmdivad.
  */
-public class ProcessGlobal implements Processor<String, Arena> {
+public class ProcessGlobalArena implements Processor<String, Arena> {
 
     private ProcessorContext context;
     private KeyValueStore<String, Arena> store;
@@ -22,7 +22,7 @@ public class ProcessGlobal implements Processor<String, Arena> {
 
     @Override
     public void process(String key, Arena value) {
-        store.putIfAbsent(key, value);
+        store.put(key, value);
     }
 
     @Override

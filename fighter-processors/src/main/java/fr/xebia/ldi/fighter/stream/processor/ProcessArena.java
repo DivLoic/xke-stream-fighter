@@ -13,17 +13,17 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class ProcessArena implements Processor<String, Arena> {
 
     private ProcessorContext context;
-    private KeyValueStore<String, Arena> store;
+    private KeyValueStore<String, Arena> arenaStore;
 
     @Override
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
         this.context = context;
 
-        this.store = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
+        this.arenaStore = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
 
         this.context.schedule(3000, PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
-            this.store.all().forEachRemaining((arenaKeyValue) ->
+            this.arenaStore.all().forEachRemaining((arenaKeyValue) ->
                     this.context.forward(
                             String.format("(%tc)  %-15S :", timestamp, arenaKeyValue.value.getName()),
                             arenaKeyValue.value.getTerminals().toString(),
@@ -35,7 +35,7 @@ public class ProcessArena implements Processor<String, Arena> {
 
     @Override
     public void process(String key, Arena value) {
-        store.put(key, value);
+        arenaStore.put(key, value);
     }
 
     @Override

@@ -6,10 +6,7 @@ import fr.xebia.ldi.fighter.schema.Arena;
 import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Round;
 import fr.xebia.ldi.fighter.schema.Victory;
-import fr.xebia.ldi.fighter.stream.processor.ProcessArena;
-import fr.xebia.ldi.fighter.stream.processor.ProcessPlayer;
-import fr.xebia.ldi.fighter.stream.processor.ProcessRound;
-import fr.xebia.ldi.fighter.stream.processor.ProcessVictory;
+import fr.xebia.ldi.fighter.stream.processor.*;
 import fr.xebia.ldi.fighter.stream.queries.Query;
 import fr.xebia.ldi.fighter.stream.utils.EventTimeExtractor;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
@@ -58,7 +55,11 @@ public class ProcessorAPI {
         SpecificAvroSerde<Victory> victorySerde = new SpecificAvroSerde<>();
         victorySerde.configure(props, false);
 
-        Topology builder = new Topology();
+        StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
+                Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
+                keyAvroSerde,
+                Serdes.Long()
+        );
 
         StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder = Stores.keyValueStoreBuilder(
                 Stores.persistentKeyValueStore("ARENA-STORE"),
@@ -66,21 +67,22 @@ public class ProcessorAPI {
                 arenaSerde
         );
 
-        StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
-                Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
-                keyAvroSerde,
-                Serdes.Long()
-        );
 
-        builder
-                .addSource("ARENAS-SRC", Serdes.String().deserializer(), arenaSerde.deserializer(), "ARENAS")
+        Topology builder = new Topology();
 
-                .addSource(LATEST, "ROUNDS-SRC", new EventTimeExtractor(),
+
+        arenaStoreBuilder.withLoggingDisabled();
+
+        builder.addGlobalStore(
+                arenaStoreBuilder, "GLOBAL-ARENAS",
+                Serdes.String().deserializer(), arenaSerde.deserializer(),
+                "ARENAS", "PROCESS-ARENA", ProcessGlobalArena::new);
+
+
+        builder.addSource(LATEST, "ROUNDS-SRC", new EventTimeExtractor(),
                         Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
 
                 .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS-SRC")
-
-                .addProcessor("PROCESS-ARENA", ProcessArena::new, "ARENAS-SRC")
 
                 .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
 
@@ -92,14 +94,16 @@ public class ProcessorAPI {
 
                 .addStateStore(arenaStoreBuilder, "PROCESS-ARENA", "PROCESS-PLAYER")
 
-                .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY")
+                .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY");
 
-                .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY");
 
         // PRESENTATION PURPOSE ONLY
-        builder.addSink("TERMINALS-COUNT", "EQUIPMENTS", Serdes.String().serializer(), Serdes.String().serializer(), "PROCESS-ARENA");
+        builder
+                .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY")
 
-        delayProcessing(5L);
+                .addSink("TERMINALS-COUNT", "EQUIPMENTS", Serdes.String().serializer(), Serdes.String().serializer(), "PROCESS-ARENA");
+
+        delayProcessing(config.getLong("start-lag"));
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
 
