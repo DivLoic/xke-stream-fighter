@@ -20,22 +20,14 @@ public class ProcessArena implements Processor<String, Arena> {
     public void init(ProcessorContext context) {
         this.context = context;
 
-        this.arenaStore = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
+        // TODO 2 -> B: get the KeyValueStore as ARENA-STORE
 
-        this.context.schedule(3000, PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
-            this.arenaStore.all().forEachRemaining((arenaKeyValue) ->
-                    this.context.forward(
-                            String.format("(%tc)  %-15S :", timestamp, arenaKeyValue.value.getName()),
-                            arenaKeyValue.value.getTerminals().toString(),
-                            "TERMINALS-COUNT"
-                    )
-            )
-        );
+        // TODO 2 -> F: send a list of point of sales every 10min (WALL_CLOCK_TIME)
     }
 
     @Override
     public void process(String key, Arena value) {
-        arenaStore.put(key, value);
+        // TODO 2 -> C: put each message in the store
     }
 
     @Override

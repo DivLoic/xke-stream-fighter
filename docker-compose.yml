@@ -80,16 +80,16 @@ services:
     volumes:
       - ./fighter-processors/src/main/resources/scripts:/opt/docker/scripts/
 
-  app-processorapi:
-    image: fighter-processors:0.1.0-SNAPSHOT
-    entrypoint: bin/processor-a-p-i
-    hostname: app-processorapi
-    depends_on:
-      - actors
-    environment:
-      APPID: XKE-KSTREAM-PROC
-      SCHEMA_REGISTRY: http://registry:8081/
-      KAFKA_BROKERS: kafka:9092
-      START_LAG: 20
-    volumes:
-      - ./fighter-processors/src/main/resources/scripts:/opt/docker/scripts/
+#  app-processorapi:
+#    image: fighter-processors:0.1.0-SNAPSHOT
+#    entrypoint: bin/processor-a-p-i
+#    hostname: app-processorapi
+#    depends_on:
+#      - actors
+#    environment:
+#      APPID: XKE-KSTREAM-PROC
+#      SCHEMA_REGISTRY: http://registry:8081/
+#      KAFKA_BROKERS: kafka:9092
+#      START_LAG: 20
+#    volumes:
+#      - ./fighter-processors/src/main/resources/scripts:/opt/docker/scripts/
