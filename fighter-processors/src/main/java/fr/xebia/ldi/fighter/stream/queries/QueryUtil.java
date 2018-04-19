@@ -1,10 +1,10 @@
 package fr.xebia.ldi.fighter.stream.queries;
 
 import fr.xebia.ldi.fighter.schema.VictoriesCount;
-import org.joda.time.DateTime;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static fr.xebia.ldi.fighter.stream.utils.Parsing.printWindowStart;
 
 /**
  * Created by loicmdivad.
@@ -30,7 +30,7 @@ public class QueryUtil {
     public static Stream<CharSequence> streamLine(VictoriesCount count) {
         return Stream.of(
                 count.getConcept(),
-                new DateTime(count.getWindowStart()).toString("HH:mm:ss"),
+                printWindowStart(count.getWindowStart()),
                 count.getCharacter(),
                 count.getVictories().toString()
         );

@@ -7,8 +7,11 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Windowed;
-import org.joda.time.DateTime;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -16,6 +19,8 @@ import java.util.stream.Stream;
  * Created by loicmdivad.
  */
 public class Parsing {
+
+    public static final DateTimeFormatter windowformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private static final String[] characters = {
             "Ken", "Ryu", "Geki", "Chun-Li", "Akuma", "Sakura", "Dhalsim", "Blair",
@@ -43,16 +48,20 @@ public class Parsing {
             .requiredLong("victories")
             .endRecord();
 
-    public static Stream<GenericRecord> generateWindowKeys(String concept){
-        return Arrays.stream(characters)
-                .map((String character) -> generateWindowKey(character, concept));
+    public static String printWindowStart(Long start){
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(start), ZoneId.of("Europe/Paris")).format(windowformatter);
     }
 
-    public static GenericRecord generateWindowKey(String character, String concept) {
+    private static GenericRecord generateWindowKey(String character, String concept) {
         GenericRecord record = new GenericData.Record(characterConceptKey);
         record.put("character", character);
         record.put("concept", concept);
         return record;
+    }
+
+    public static Stream<GenericRecord> generateWindowKeys(String concept){
+        return Arrays.stream(characters)
+                .map((String character) -> generateWindowKey(character, concept));
     }
 
     public static GenericRecord groupedDataKey(Victory v) {
@@ -70,7 +79,7 @@ public class Parsing {
     }
 
     public static KeyValue<GenericRecord, GenericRecord> parseWindowKey(Windowed<GenericRecord> windowKey, Long count) {
-        String startTime = new DateTime(windowKey.window().start()).toString("HH:mm:ss");
+        String startTime = printWindowStart(windowKey.window().start());
         String concept = windowKey.key().get("concept").toString();
         String character = windowKey.key().get("character").toString();
 
@@ -84,7 +93,7 @@ public class Parsing {
     }
 
     public static KeyValue<GenericRecord, GenericRecord> parseWindowKey(long windowStart, GenericRecord group, long count) {
-        String startTime = new DateTime(windowStart).toString("HH:mm:ss");
+        String startTime = printWindowStart(windowStart);
         String concept = group.get("concept").toString();
         String character = group.get("character").toString();
 

@@ -1,5 +1,7 @@
 package fr.xebia.ldi.fighter.actor
 
+import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+
 import akka.NotUsed
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.kafka.ProducerMessage
@@ -9,12 +11,13 @@ import fr.xebia.ldi.fighter.entity.CharacterEntity.CharacterEntity
 import fr.xebia.ldi.fighter.schema.{Arena, Player, Round, VideoGame}
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.joda.time.DateTime
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.rng.Seed
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.util.Try
 
 /**
   * Created by loicmdivad.
@@ -24,6 +27,10 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   val arena: Arena = Arena(location)
   val default: Gen.Parameters = Gen.Parameters.default.withSize(3000)
   val gaussians = Array(Gaussian(50, 35), Gaussian(25, 10), Gaussian(75, 10))
+
+  // TODO: [XSF-12] add smarts zone id
+  val zoneId: ZoneId = Try(ZoneId.of("Europe/Paris")).getOrElse(ZoneId.systemDefault())
+  val zoneOffset: ZoneOffset =  ZoneOffset.UTC
 
   val selector: Gen[Player] = for {
     dist <-  Gen.oneOf(gaussians)
@@ -46,7 +53,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, game.label, DateTime.now().getMillis)
+    val round = Round(arena.id, id, winner, looser, game.label, LocalDateTime.now.toInstant(zoneOffset).toEpochMilli)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))
