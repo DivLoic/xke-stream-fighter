@@ -17,7 +17,6 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.KStream;
@@ -70,7 +69,7 @@ public class StreamsDsl {
 
                 .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
 
-                .map((String arenaId, Round round) -> new KeyValue<>(arenaId, round.getWinner()))
+                .mapValues((Round round) -> round.getWinner())
 
                 .join(arenaTable, (arenaId, player) -> arenaId, Victory::new)
 

@@ -18,8 +18,10 @@ val akkaVersion = "2.5.9"
 val reactivStream = "0.19"
 val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.4"
-val kafkaVersion = "1.0.1"
-val cpVerison = "4.0.0"
+val kafkaVersion = "1.1.0"
+val cpVerison = "4.1.0"
+val logBackVersion = "1.2.3"
+val avro4sVErsion = "1.8.3"
 
 lazy val common = Seq(
 
@@ -33,8 +35,8 @@ lazy val common = Seq(
 
   libraryDependencies ++= Seq(
     "com.typesafe" % "config" % "1.3.1",
-    "com.sksamuel.avro4s" % "avro4s-core_2.12" % "1.8.0",
-    "ch.qos.logback" % "logback-classic" % "1.2.3" force(),
+    "com.sksamuel.avro4s" % "avro4s-core_2.12" % avro4sVErsion,
+    "ch.qos.logback" % "logback-classic" % logBackVersion force(),
     "com.github.danielwegener" % "logback-kafka-appender" % "0.2.0-RC1"
 ),
 
