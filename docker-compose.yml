@@ -2,7 +2,7 @@
 version: '3'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.0.0
+    image: confluentinc/cp-zookeeper:4.1.0
     hostname: zookeeper
     ports:
       - "2181:2181"
@@ -11,7 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:4.0.0
+    image: confluentinc/cp-kafka:4.1.0
     hostname: kafka
     depends_on:
       - zookeeper
@@ -23,14 +23,9 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       JMX_PORT: 9999
-      KAFKA_JMX_OPTS: >
-       -Dcom.sun.management.jmxremote
-       -Dcom.sun.management.jmxremote.authenticate=false
-       -Dcom.sun.management.jmxremote.ssl=false
-       -Dcom.sun.management.jmxremote.rmi.port=9999
 
   registry:
-    image: confluentinc/cp-schema-registry:4.0.0
+    image: confluentinc/cp-schema-registry:4.1.0
     hostname: registry
     depends_on:
       - kafka
@@ -42,19 +37,6 @@ services:
       SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
       SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,DELETE,OPTIONS'
       SCHEMA_REGISTRY_AVRO_COMPATIBILITY_LEVEL: none
-
-  rest-proxy:
-    image: confluentinc/cp-kafka-rest:4.0.0
-    hostname: rest-proxy
-    depends_on:
-      - registry
-    ports:
-      - "8082:8082"
-    environment:
-      KAFKA_REST_HOST_NAME: rest-proxy
-      KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
-      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,DELETE,OPTIONS'
 
   actors:
     image: fighter-actors:0.1.0-SNAPSHOT

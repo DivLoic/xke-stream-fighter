@@ -1,5 +1,6 @@
 # xke-stream-fighter
 [![Build Status](https://travis-ci.org/DivLoic/xke-stream-fighter.svg?branch=master)](https://travis-ci.org/DivLoic/xke-stream-fighter)
+[![codecov](https://codecov.io/gh/DivLoic/xke-stream-fighter/branch/master/graph/badge.svg)](https://codecov.io/gh/DivLoic/xke-stream-fighter)
 
 This project is related to the talk: [**Processor API**](#/). 
 It gathers a few code examples showing how the *Streams DSL*,
