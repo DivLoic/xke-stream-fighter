@@ -12,12 +12,11 @@ description :=
 
 organizationHomepage := Some(url("http://blog.xebia.fr"))
 
-coverageEnabled := true
-
+scalaVersion := "2.12.4"
 val akkaVersion = "2.5.9"
 val reactivStream = "0.19"
 val slickVersion = "3.2.1"
-val scalaTestVersion = "3.0.4"
+val scalaTestVersion = "3.0.5"
 val kafkaVersion = "1.1.0"
 val cpVerison = "4.1.0"
 val logBackVersion = "1.2.3"
@@ -37,7 +36,8 @@ lazy val common = Seq(
     "com.typesafe" % "config" % "1.3.1",
     "com.sksamuel.avro4s" % "avro4s-core_2.12" % avro4sVErsion,
     "ch.qos.logback" % "logback-classic" % logBackVersion force(),
-    "com.github.danielwegener" % "logback-kafka-appender" % "0.2.0-RC1"
+    "com.github.danielwegener" % "logback-kafka-appender" % "0.2.0-RC1",
+    "org.scalatest" %% "scalatest" % scalaTestVersion % Test
 ),
 
   logLevel in doc := Level.Error
@@ -128,3 +128,5 @@ lazy val avroGeneratorSettings = Seq(
 
   sourceDirectory in AvroConfig := (resourceDirectory in Compile).value / "avro"
 )
+
+coverageEnabled := true
