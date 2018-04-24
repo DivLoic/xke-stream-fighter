@@ -14,7 +14,7 @@ organizationHomepage := Some(url("http://blog.xebia.fr"))
 
 scalaVersion := "2.12.4"
 val akkaVersion = "2.5.9"
-val reactivStream = "0.19"
+val akkaKafkaVersion = "0.20"
 val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.5"
 val kafkaVersion = "1.1.0"
@@ -86,7 +86,7 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-kafka" % "0.18" exclude("org.apache.kafka", "kafka-clients"),
+    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion exclude("org.apache.kafka", "kafka-clients"),
     "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
   )
 )
