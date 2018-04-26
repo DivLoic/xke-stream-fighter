@@ -70,6 +70,15 @@ lazy val `fighter-actors` = project
   .settings(mathDependencies: _*)
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-actors") : _*)
+  .settings(
+    coverageEnabled := true,
+    coverageExcludedPackages :=
+      """
+        |fr.xebia.ldi.fighter.schema;
+        |fr.xebia.ldi.fighter.entity;
+        |fr.xebia.ldi.fighter.actor.Play;
+      """.stripMargin
+  )
 
 lazy val kafkaDependencies = Seq(
   resolvers ++= Seq("confluent" at "http://packages.confluent.io/maven/"),
@@ -128,5 +137,3 @@ lazy val avroGeneratorSettings = Seq(
 
   sourceDirectory in AvroConfig := (resourceDirectory in Compile).value / "avro"
 )
-
-coverageEnabled := true
