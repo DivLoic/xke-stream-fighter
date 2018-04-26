@@ -1,11 +1,13 @@
 package fr.xebia.ldi.fighter.actor.utils
 
+import java.util.Properties
+
 import org.scalatest.{FlatSpec, GivenWhenThen, Matchers}
 
 /**
   * Created by loicmdivad.
   */
-class AdminFlatSpec extends FlatSpec  with Matchers with GivenWhenThen {
+class AdminFlatSpec extends FlatSpec with Matchers with GivenWhenThen {
 
   "parseTopics" should "create instance of NewTopics" in {
     Given("a seperated list of topics")
@@ -28,6 +30,22 @@ class AdminFlatSpec extends FlatSpec  with Matchers with GivenWhenThen {
     newTopics.head.replicationFactor() shouldBe 3
     newTopics.tail.head.replicationFactor() shouldBe 1
     newTopics.last.replicationFactor() shouldBe 2
+  }
+
+  "toProperties" should "implicitly transform a map to a properties" in {
+    Given("map STRING -> STRING")
+    val map: Map[String, String] = Map(
+      "foo" -> "bar", "mutmut" -> "bladibla"
+    )
+
+    When("the toProperties function is imported")
+    import Admin._
+
+    Then("we can turn a map to a properties")
+    val result: Properties = map.toProperties
+
+    result.getProperty("foo") shouldBe "bar"
+    result.getProperty("mutmut") shouldBe "bladibla"
   }
 
 }
