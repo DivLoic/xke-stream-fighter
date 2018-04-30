@@ -15,12 +15,13 @@ organizationHomepage := Some(url("http://blog.xebia.fr"))
 scalaVersion := "2.12.4"
 val akkaVersion = "2.5.9"
 val akkaKafkaVersion = "0.20"
-val slickVersion = "3.2.1"
 val scalaTestVersion = "3.0.5"
 val kafkaVersion = "1.1.0"
 val cpVerison = "4.1.0"
 val logBackVersion = "1.2.3"
 val avro4sVErsion = "1.8.3"
+val checkVersion = "1.13.4"
+val breezeVersion = "0.13.2"
 
 lazy val common = Seq(
 
@@ -105,8 +106,8 @@ lazy val mathDependencies = Seq(
     "https://oss.sonatype.org/content/repositories/releases/",
 
   libraryDependencies ++= Seq(
-    "org.scalacheck" %% "scalacheck" % "1.13.4",
-    "org.scalanlp" %% "breeze" % "0.13.2"
+    "org.scalacheck" %% "scalacheck" % checkVersion,
+    "org.scalanlp" %% "breeze" % breezeVersion
   )
 )
 

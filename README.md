@@ -23,18 +23,18 @@ sbt dockerComposeUp
 This will trigger a set of containers including: the confluent stack, a dataset generator
 and the streaming application example. Start a consumer to see the input stream:
 ```bash
-kafka-avro-console-consumer --bootstrap-server localhost:9092 --topic ROUNDS
+docker-compose -p <id> exec registry kafka-avro-console-consumer --bootstrap-server kafka:9092 --topic ROUNDS
 ```
 
 The output stream represent the append log of the aggregation and can be seen with the following command:
 ```bash
-kafka-avro-console-consumer --bootstrap-server localhost:9092 --topic RESULTS-DSL
+docker-compose -p <id> exec registry kafka-avro-console-consumer --bootstrap-server kafka:9092 --topic RESULTS-DSL
 ```
 
 The interractives queries are dumped in a file inside of the stream app container.
-Given the project name `projectId` provided by the docker-compose plugin you can watch this file:
+Given the project name `id` provided by the docker-compose plugin you can watch this file:
 ```bash
-docker-compose -p <projectId> exec processors scripts/watch-interactive-queries.sh DSL
+docker-compose -p <id> exec processors scripts/watch-interactive-queries.sh DSL
 ```
 [![asciicast](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX.png)](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX)
 
