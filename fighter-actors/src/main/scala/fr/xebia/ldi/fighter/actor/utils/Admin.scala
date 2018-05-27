@@ -16,7 +16,6 @@ object Admin {
 
   val logger: Logger = LoggerFactory.getLogger(getClass)
   val topicInfoPattern: Regex = """(\S+:\d{1,}:\d{1,})""".r
-  val topicNamePattern: Regex = """(^[a-zA-Z0-9]+$)""".r
 
   def topicsCreation(config: Config, props: Map[String, String]): Unit = {
     val javaProperties = props.toProperties
@@ -26,13 +25,12 @@ object Admin {
     client.close()
   }
 
-  def parseTopics(topics: String): Vector[NewTopic] ={
+  def parseTopics(topics: String): Vector[NewTopic] = {
     topics.split(",").flatMap {
-      case topicNamePattern(name) => Some(new NewTopic(name, 1, 1))
-      case topicInfoPattern(t) =>
-        val params = t.split(":")
-        Some(new NewTopic(params.head, params.tail.head.toInt, params.last.toShort))
-      case _ => None
+      case topicInfoPattern(topic) =>
+        val Array(name, partitions, replicas) = topic.split(":")
+        Some(new NewTopic(name, partitions.toInt, replicas.toShort))
+      case name => Some(new NewTopic(name, 1, 1))
     }.toVector
   }
 

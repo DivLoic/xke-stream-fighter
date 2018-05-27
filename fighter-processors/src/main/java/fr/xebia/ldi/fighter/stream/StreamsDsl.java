@@ -69,7 +69,7 @@ public class StreamsDsl {
 
                 .filter((String arenaId, Round round) -> round.getGame() == StreetFighter)
 
-                .mapValues((Round round) -> round.getWinner())
+                .mapValues(Round::getWinner)
 
                 .join(arenaTable, (arenaId, player) -> arenaId, Victory::new)
 

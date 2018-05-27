@@ -11,7 +11,7 @@ class AdminFlatSpec extends FlatSpec with Matchers with GivenWhenThen {
 
   "parseTopics" should "create instance of NewTopics" in {
     Given("a seperated list of topics")
-    val topics = "topicA:6:3,TOPICB,topicc:16:2,/ù%$*@"
+    val topics = "topicA:6:3,TOPICB,topicc:16:1"
 
     When("parseTopics is applied")
     val newTopics = Admin.parseTopics(topics)
@@ -29,7 +29,7 @@ class AdminFlatSpec extends FlatSpec with Matchers with GivenWhenThen {
 
     newTopics.head.replicationFactor() shouldBe 3
     newTopics.tail.head.replicationFactor() shouldBe 1
-    newTopics.last.replicationFactor() shouldBe 2
+    newTopics.last.replicationFactor() shouldBe 1
   }
 
   "toProperties" should "implicitly transform a map to a properties" in {

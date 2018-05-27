@@ -53,7 +53,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, game.label, LocalDateTime.now.toInstant(zoneOffset).toEpochMilli)
+    val round = Round(arena.id, id, winner, looser, game.label, LocalDateTime.now(zoneId).toInstant(zoneOffset).toEpochMilli)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))

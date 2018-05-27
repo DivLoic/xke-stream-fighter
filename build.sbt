@@ -72,7 +72,6 @@ lazy val `fighter-actors` = project
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-actors") : _*)
   .settings(
-    coverageEnabled := true,
     coverageExcludedPackages :=
       """
         |fr.xebia.ldi.fighter.schema;
