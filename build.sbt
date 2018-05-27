@@ -16,8 +16,8 @@ scalaVersion := "2.12.4"
 val akkaVersion = "2.5.9"
 val akkaKafkaVersion = "0.20"
 val scalaTestVersion = "3.0.5"
-val kafkaVersion = "1.1.0"
-val cpVerison = "4.1.0"
+val kafkaVersion = "1.0.1"
+val cpVerison = "4.0.0"
 val logBackVersion = "1.2.3"
 val avro4sVErsion = "1.8.3"
 val checkVersion = "1.13.4"
@@ -95,7 +95,7 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion exclude("org.apache.kafka", "kafka-clients"),
+    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion,
     "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
   )
 )

@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/DivLoic/xke-stream-fighter.svg?branch=master)](https://travis-ci.org/DivLoic/xke-stream-fighter)
 [![codecov](https://codecov.io/gh/DivLoic/xke-stream-fighter/branch/master/graph/badge.svg)](https://codecov.io/gh/DivLoic/xke-stream-fighter)
 
-This project is related to the talk: [**Processor API**](#/). 
+This project is related to the talk: [**Processor API**](https://speakerdeck.com/loicdivad/processor-api-the-dark-side-of-kafka-streams). 
 It gathers a few code examples showing how the *Streams DSL*,
 from [Kafka Streams](https://kafka.apache.org/documentation/streams/),
 relies on a lower level api and why this api is exposed. While describing
@@ -14,7 +14,6 @@ Prerequisites:
 - [:arrow_down:](https://www.scala-sbt.org/download.html) sbt
 - [:arrow_down:](http://www.scala-lang.org/download/) scala
 - [:arrow_down:](https://docs.docker.com/install/) docker
-- [:arrow_down:](https://www.confluent.io/download/) confluent
 ```bash
 git clone git@github.com:DivLoic/xke-stream-fighter.git
 cd xke-stream-fighter
