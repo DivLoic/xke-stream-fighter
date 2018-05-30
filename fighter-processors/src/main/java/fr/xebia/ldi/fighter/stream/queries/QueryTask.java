@@ -33,7 +33,6 @@ public class QueryTask extends TimerTask {
 
     private String outpath;
     private ReadOnlyWindowStore<GenericRecord, Long> windowStore;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public QueryTask(ReadOnlyWindowStore<GenericRecord, Long> windowStore, String outpath) {
         this.setOutpath(outpath);
@@ -116,7 +115,7 @@ public class QueryTask extends TimerTask {
         } finally {
             try {
                 writer.close();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
