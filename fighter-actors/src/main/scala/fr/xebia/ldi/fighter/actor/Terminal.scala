@@ -1,6 +1,6 @@
 package fr.xebia.ldi.fighter.actor
 
-import java.time.{LocalDateTime, ZoneId, ZoneOffset}
+import java.time.{LocalDateTime, ZoneId}
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
@@ -30,7 +30,6 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
 
   // TODO: [XSF-12] add smarts zone id
   val zoneId: ZoneId = Try(ZoneId.of("Europe/Paris")).getOrElse(ZoneId.systemDefault())
-  val zoneOffset: ZoneOffset =  ZoneOffset.UTC
 
   val selector: Gen[Player] = for {
     dist <-  Gen.oneOf(gaussians)
@@ -53,7 +52,7 @@ case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: 
   def play(): Unit = {
     val (winner, looser) = select()
 
-    val round = Round(arena.id, id, winner, looser, game.label, LocalDateTime.now(zoneId).toInstant(zoneOffset).toEpochMilli)
+    val round = Round(arena.id, id, winner, looser, game.label, LocalDateTime.now.atZone(zoneId).toEpochSecond * 1000)
 
     val record: ProducerRecord[String, GenericRecord] =
       new ProducerRecord(s"ROUNDS", key, Round.roundFormat.to(round))
