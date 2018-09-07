@@ -14,22 +14,26 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.rng.Seed
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.Try
+import scala.language.postfixOps
 
 /**
   * Created by loicmdivad.
   */
 case class Terminal(id: Int, game: VideoGame, location: ArenaEntity, publisher: ActorRef) extends Actor {
 
+  val logger: Logger = LoggerFactory.getLogger(getClass)
+
   val arena: Arena = Arena(location)
   val default: Gen.Parameters = Gen.Parameters.default.withSize(3000)
   val gaussians = Array(Gaussian(50, 35), Gaussian(25, 10), Gaussian(75, 10))
 
-  // TODO: [XSF-12] add smarts zone id
-  val zoneId: ZoneId = Try(ZoneId.of("Europe/Paris")).getOrElse(ZoneId.systemDefault())
+  val zoneId: ZoneId = ZoneId.systemDefault()
+
+  logger debug s"Now the store: $arena is running the game $game"
 
   val selector: Gen[Player] = for {
     dist <-  Gen.oneOf(gaussians)

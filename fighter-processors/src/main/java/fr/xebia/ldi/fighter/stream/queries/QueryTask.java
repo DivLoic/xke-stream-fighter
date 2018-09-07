@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
@@ -33,6 +36,7 @@ public class QueryTask extends TimerTask {
 
     private String outpath;
     private ReadOnlyWindowStore<GenericRecord, Long> windowStore;
+    private Logger logger = LoggerFactory.getLogger(QueryTask.class);
 
     public QueryTask(ReadOnlyWindowStore<GenericRecord, Long> windowStore, String outpath) {
         this.setOutpath(outpath);
@@ -53,7 +57,7 @@ public class QueryTask extends TimerTask {
 
     @Override
     public void run() {
-        long now = System.currentTimeMillis();
+        long now = LocalDateTime.now(ZoneId.systemDefault()).toEpochSecond(ZoneOffset.UTC) * 1000;
         long windowstart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
 
         String[] lines = generateWindowKeys("PRO")
@@ -76,6 +80,9 @@ public class QueryTask extends TimerTask {
             }
 
             printLayout(this.outpath, QueryUtil::footer);
+
+        } else {
+            logger.warn("No lines to write were found");
         }
     }
 
@@ -90,6 +97,7 @@ public class QueryTask extends TimerTask {
     private VictoriesCount querying(GenericRecord key, Long since, Long now, ReadOnlyWindowStore<GenericRecord, Long> windowStore){
         WindowStoreIterator<Long> iterator = windowStore.fetch(key, since, now);
         VictoriesCount victoriesCount = null;
+
         while(iterator.hasNext()){
             KeyValue<Long, Long> count = iterator.next();
             victoriesCount = new VictoriesCount(

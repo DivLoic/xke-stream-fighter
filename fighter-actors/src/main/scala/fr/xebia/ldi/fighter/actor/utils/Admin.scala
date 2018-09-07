@@ -23,6 +23,7 @@ object Admin {
     val topics: Vector[NewTopic] = parseTopics(config.getString("admin.topics"))
     client.createTopics(topics.asJava)
     client.close()
+    topics.foreach(t => logger info s"topic creation: ${t.name} - partitions: ${t.numPartitions}")
   }
 
   def parseTopics(topics: String): Vector[NewTopic] = {

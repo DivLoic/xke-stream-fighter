@@ -95,8 +95,7 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion,
-    "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
+    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion
   )
 )
 
