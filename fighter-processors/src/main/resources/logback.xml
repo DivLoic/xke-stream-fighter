@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-    <logger name="fr.xebia.ldi" level="INFO" additivity="false">
+    <logger name="fr.xebia.ldi" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

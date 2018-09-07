@@ -25,3 +25,4 @@ project/plugins/project/
 
 ### project ###
 *resources/avro-exemples/
+/*.sh

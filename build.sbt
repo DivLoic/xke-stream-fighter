@@ -25,7 +25,7 @@ val breezeVersion = "0.13.2"
 
 lazy val common = Seq(
 
-  version := "0.1.0-SNAPSHOT",
+  version := "0.1.1",
 
   isSnapshot := false,
 
@@ -95,8 +95,7 @@ lazy val akkaDependencies = Seq(
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
-    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion,
-    "org.slf4j" % "slf4j-nop" % "1.7.25" exclude("org.slf4j", "slf4j-log4j12")
+    "com.typesafe.akka" %% "akka-stream-kafka" % akkaKafkaVersion
   )
 )
 
