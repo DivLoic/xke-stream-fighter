@@ -6,7 +6,10 @@ import fr.xebia.ldi.fighter.schema.Arena;
 import fr.xebia.ldi.fighter.schema.Player;
 import fr.xebia.ldi.fighter.schema.Round;
 import fr.xebia.ldi.fighter.schema.Victory;
-import fr.xebia.ldi.fighter.stream.processor.*;
+import fr.xebia.ldi.fighter.stream.processor.ProcessGlobalArena;
+import fr.xebia.ldi.fighter.stream.processor.ProcessPlayer;
+import fr.xebia.ldi.fighter.stream.processor.ProcessRound;
+import fr.xebia.ldi.fighter.stream.processor.ProcessVictory;
 import fr.xebia.ldi.fighter.stream.queries.Query;
 import fr.xebia.ldi.fighter.stream.utils.EventTimeExtractor;
 import fr.xebia.ldi.fighter.stream.utils.JobConfig;
@@ -20,9 +23,12 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.WindowStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.stream.utils.JobScheduling.delayProcessing;
 import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
@@ -31,6 +37,8 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  * Created by loicmdivad.
  */
 public class ProcessorAPI {
+
+    private static Logger logger = LoggerFactory.getLogger(ProcessorAPI.class);
 
     public static void main(String[] args){
 
@@ -56,7 +64,7 @@ public class ProcessorAPI {
         victorySerde.configure(props, false);
 
         StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
-                Stores.persistentWindowStore("VICTORIES-STORE", TimeUnit.SECONDS.toMillis(15), 2, 1, false),
+                Stores.persistentWindowStore("VICTORIES-STORE", Duration.ofSeconds(15), Duration.ofSeconds(2), false),
                 keyAvroSerde,
                 Serdes.Long()
         );
@@ -67,11 +75,9 @@ public class ProcessorAPI {
                 arenaSerde
         );
 
+        arenaStoreBuilder.withLoggingDisabled();
 
         Topology builder = new Topology();
-
-
-        arenaStoreBuilder.withLoggingDisabled();
 
         builder.addGlobalStore(
                 arenaStoreBuilder, "GLOBAL-ARENAS",
@@ -92,20 +98,25 @@ public class ProcessorAPI {
 
                 .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
 
-                .addStateStore(arenaStoreBuilder, "PROCESS-ARENA", "PROCESS-PLAYER")
-
                 .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY");
 
-
-        // PRESENTATION PURPOSE ONLY
+        // ~*~ presentation purpose only ~*~
         builder
                 .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY")
 
                 .addSink("TERMINALS-COUNT", "EQUIPMENTS", Serdes.String().serializer(), Serdes.String().serializer(), "PROCESS-ARENA");
 
-        delayProcessing(config.getLong("start-lag"));
+        // ~*~ presentation purpose only ~*~
+
+        Arrays.asList(
+
+                builder.describe().toString().split("\n")
+
+        ).forEach( node -> logger.info(node));
 
         KafkaStreams kafkaStreams = new KafkaStreams(builder, JobConfig.properties(config));
+
+        delayProcessing(config.getLong("start-lag"));
 
         kafkaStreams.cleanUp();
 

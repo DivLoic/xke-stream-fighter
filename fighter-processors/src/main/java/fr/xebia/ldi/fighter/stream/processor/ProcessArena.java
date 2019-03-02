@@ -4,7 +4,10 @@ import fr.xebia.ldi.fighter.schema.Arena;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.PunctuationType;
+import org.apache.kafka.streams.processor.To;
 import org.apache.kafka.streams.state.KeyValueStore;
+
+import java.time.Duration;
 
 
 /**
@@ -22,12 +25,12 @@ public class ProcessArena implements Processor<String, Arena> {
 
         this.arenaStore = (KeyValueStore) this.context.getStateStore("ARENA-STORE");
 
-        this.context.schedule(3000, PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
+        this.context.schedule(Duration.ofSeconds(3), PunctuationType.WALL_CLOCK_TIME, (timestamp) ->
             this.arenaStore.all().forEachRemaining((arenaKeyValue) ->
                     this.context.forward(
                             String.format("(%tc)  %-15S :", timestamp, arenaKeyValue.value.getName()),
                             arenaKeyValue.value.getTerminals().toString(),
-                            "TERMINALS-COUNT"
+                            To.child("TERMINALS-COUNT")
                     )
             )
         );
@@ -36,12 +39,6 @@ public class ProcessArena implements Processor<String, Arena> {
     @Override
     public void process(String key, Arena value) {
         arenaStore.put(key, value);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void punctuate(long timestamp) {
-
     }
 
     @Override

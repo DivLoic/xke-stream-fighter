@@ -17,9 +17,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
@@ -57,8 +59,8 @@ public class QueryTask extends TimerTask {
 
     @Override
     public void run() {
-        long now = LocalDateTime.now(ZoneId.systemDefault()).toEpochSecond(ZoneOffset.UTC) * 1000;
-        long windowstart = computeWindowStart(now, TimeUnit.SECONDS.toMillis(15));
+        Instant now = LocalDateTime.now(ZoneId.systemDefault()).toInstant(ZoneOffset.UTC);
+        Instant windowstart = now.minus(TimeUnit.SECONDS.toSeconds(15), ChronoUnit.SECONDS);
 
         String[] lines = generateWindowKeys("PRO")
                 .map((GenericRecord key) -> querying(key, windowstart, now, windowStore))
@@ -94,7 +96,7 @@ public class QueryTask extends TimerTask {
      * @param windowStore a ReadOnlyWindowStore of type (GenericRecord, Long)
      * @return instance of VictoriesCount (one character, one concept, one window) ... or null
      */
-    private VictoriesCount querying(GenericRecord key, Long since, Long now, ReadOnlyWindowStore<GenericRecord, Long> windowStore){
+    private VictoriesCount querying(GenericRecord key, Instant since, Instant now, ReadOnlyWindowStore<GenericRecord, Long> windowStore){
         WindowStoreIterator<Long> iterator = windowStore.fetch(key, since, now);
         VictoriesCount victoriesCount = null;
 

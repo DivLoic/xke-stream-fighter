@@ -65,7 +65,7 @@ services:
 
   app-processorapi:
     image: fighter-processors:0.2.0-SNAPSHOT
-    entrypoint: bin/processor-a-p-i
+    entrypoint: bin/processor-api
     hostname: app-processorapi
     depends_on:
       - app-actors

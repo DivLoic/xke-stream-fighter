@@ -53,12 +53,6 @@ public class ProcessVictory implements Processor<GenericRecord, Victory> {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void punctuate(long timestamp) {
-
-    }
-
-    @Override
     public void close() {
 
     }

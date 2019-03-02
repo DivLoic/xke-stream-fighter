@@ -5,10 +5,7 @@ name := "xke-stream-fighter"
 
 maintainer := "Loïc DIVAD <ldivad@xebia.fr>"
 
-description :=
-  """
-    |A simple demo of the kafka-streams Processor API
-  """.stripMargin
+description := "A simple demo of the kafka-streams Processor API"
 
 organizationHomepage := Some(url("http://blog.xebia.fr"))
 
@@ -64,6 +61,7 @@ lazy val `fighter-processors` = project
   .settings(common: _*)
   .settings(kafkaDependencies: _*)
   .settings(avroGeneratorSettings: _*)
+  .settings(mainClass := Some("fr.xebia.ldi.fighter.StreamsDsl"))
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-processors") : _*)
 
@@ -72,6 +70,7 @@ lazy val `fighter-actors` = project
   .settings(akkaDependencies: _*)
   .settings(kafkaDependencies: _*)
   .settings(mathDependencies: _*)
+  .settings(mainClass := Some("fr.xebia.ldi.fighter.actor.Play"))
   .enablePlugins(JavaAppPackaging, DockerPlugin, DockerComposePlugin)
   .settings(dockerSettings ++ (packageName in Docker := "fighter-actors") : _*)
   .settings(
@@ -138,4 +137,12 @@ lazy val avroGeneratorSettings = Seq(
   managedSourceDirectories in Compile += sourceManaged.value / "generated",
 
   sourceDirectory in AvroConfig := (resourceDirectory in Compile).value / "avro"
+)
+
+scalacOptions ++= Seq(
+  "-encoding", "utf8",
+  "-Xfatal-warnings",
+  "-deprecation",
+  "-language:existentials",
+  "-language:postfixOps"
 )

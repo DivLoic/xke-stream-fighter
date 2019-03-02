@@ -50,13 +50,15 @@ object Play extends App {
       Admin.topicsCreation(conf, producerSettings.properties)
 
       Source.fromIterator(() => ArenaEntity.Arenas.map(Arena(_)).toIterator)
-        .map(arena => new ProducerRecord("ARENAS", arena.id.toString, Arena.arenaFormat.to(arena)))
+        .map[ProducerRecord[String, GenericRecord]]( arena => new ProducerRecord(
+        "ARENAS", arena.id.toString, Arena.arenaFormat.to(arena))
+      )
         .buffer(1, OverflowStrategy.backpressure)
         .runWith(Producer.plainSink(producerSettings))
 
       implicit val producerRef: ActorRef =
         Source.actorRef[Message[String, GenericRecord, NotUsed]](10, OverflowStrategy.dropBuffer)
-          .via(Producer.flow(producerSettings))
+          .via(Producer.flexiFlow(producerSettings))
           .to(Sink.ignore)
           .run()
 

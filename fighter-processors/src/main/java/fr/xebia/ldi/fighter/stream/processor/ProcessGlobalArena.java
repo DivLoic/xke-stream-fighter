@@ -25,11 +25,6 @@ public class ProcessGlobalArena implements Processor<String, Arena> {
         store.put(key, value);
     }
 
-    @Override
-    @SuppressWarnings("deprecation")
-    public void punctuate(long timestamp) {
-
-    }
 
     @Override
     public void close() {

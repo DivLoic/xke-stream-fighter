@@ -15,17 +15,13 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.GlobalKTable;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.WindowStore;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
 import static fr.xebia.ldi.fighter.stream.utils.JobScheduling.delayProcessing;
@@ -53,7 +49,7 @@ public class StreamsDsl {
         SpecificAvroSerde<Player> playerSerde = new SpecificAvroSerde<>();
         playerSerde.configure(props, false);
 
-        TimeWindows window = TimeWindows.of(TimeUnit.SECONDS.toMillis(15));
+        TimeWindows window = TimeWindows.of(Duration.ofSeconds(15));
 
         Materialized<GenericRecord, Long, WindowStore<Bytes, byte[]>> mat = Materialized.as("VICTORIES-STORE");
 
