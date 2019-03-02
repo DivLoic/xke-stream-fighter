@@ -2,7 +2,7 @@
 version: '3'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:4.0.0
+    image: confluentinc/cp-zookeeper:5.1.2
     hostname: zookeeper
     ports:
       - "2181:2181"
@@ -11,7 +11,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:4.0.0
+    image: confluentinc/cp-kafka:5.1.2
     hostname: kafka
     depends_on:
       - zookeeper
@@ -25,7 +25,7 @@ services:
       JMX_PORT: 9999
 
   registry:
-    image: confluentinc/cp-schema-registry:4.0.0
+    image: confluentinc/cp-schema-registry:5.1.2
     hostname: registry
     depends_on:
       - kafka
@@ -40,7 +40,7 @@ services:
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: 'OFF'
 
   app-actors:
-    image: fighter-actors:0.1.0-SNAPSHOT
+    image: fighter-actors:0.2.0-SNAPSHOT
     hostname: actors
     depends_on:
       - registry
@@ -50,7 +50,7 @@ services:
       TOPIC_LIST: "ARENAS,ROUNDS:6:1,REPARTITIONED,TOKKENS,RESULTS-PROC,RESULTS-DSL,EQUIPMENTS"
 
   app-streamdsl:
-    image: fighter-processors:0.1.0-SNAPSHOT
+    image: fighter-processors:0.2.0-SNAPSHOT
     entrypoint: bin/streams-dsl
     hostname: app-streamdsl
     depends_on:
@@ -64,7 +64,7 @@ services:
       - ./fighter-processors/src/main/resources/scripts:/opt/docker/scripts/
 
   app-processorapi:
-    image: fighter-processors:0.1.0-SNAPSHOT
+    image: fighter-processors:0.2.0-SNAPSHOT
     entrypoint: bin/processor-a-p-i
     hostname: app-processorapi
     depends_on:

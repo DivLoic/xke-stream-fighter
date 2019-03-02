@@ -12,32 +12,35 @@ description :=
 
 organizationHomepage := Some(url("http://blog.xebia.fr"))
 
-scalaVersion := "2.12.4"
-val akkaVersion = "2.5.9"
-val akkaKafkaVersion = "0.20"
-val scalaTestVersion = "3.0.5"
-val kafkaVersion = "1.0.1"
-val cpVerison = "4.0.0"
-val logBackVersion = "1.2.3"
-val avro4sVErsion = "1.8.3"
-val checkVersion = "1.13.4"
+scalaVersion := "2.12.8"
+
+val cpVerison = "5.1.2"
+val akkaVersion = "2.5.21"
+val checkVersion = "1.14.0"
+val kafkaVersion = "2.1.1"
+val configVersion = "1.3.3"
+val avro4sVErsion = "2.0.4"
 val breezeVersion = "0.13.2"
+val logBackVersion = "1.2.3"
+val akkaKafkaVersion = "1.0"
+val scalaTestVersion = "3.0.6"
+val logbackKafkaVersion = "0.2.0-RC2"
 
 lazy val common = Seq(
 
-  version := "0.1.0-SNAPSHOT",
+  version := "0.2.0-SNAPSHOT",
 
   isSnapshot := false,
 
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.8",
 
   organization := "fr.xebia",
 
   libraryDependencies ++= Seq(
-    "com.typesafe" % "config" % "1.3.1",
+    "com.typesafe" % "config" % configVersion,
     "com.sksamuel.avro4s" % "avro4s-core_2.12" % avro4sVErsion,
     "ch.qos.logback" % "logback-classic" % logBackVersion force(),
-    "com.github.danielwegener" % "logback-kafka-appender" % "0.2.0-RC1",
+    "com.github.danielwegener" % "logback-kafka-appender" % logbackKafkaVersion,
     "org.scalatest" %% "scalatest" % scalaTestVersion % Test
 ),
 
