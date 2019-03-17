@@ -35,7 +35,9 @@ Given the project name `id` provided by the docker-compose plugin you can watch 
 ```bash
 docker-compose -p <id> exec processors scripts/watch-interactive-queries.sh DSL
 ```
-[![asciicast](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX.png)](https://asciinema.org/a/MSumeCHBTSmzAORfCjxxEThqX)
+
+<a href="https://asciinema.org/a/170998" target="_blank"><img src="https://asciinema.org/a/170998.svg" /></a>
+
 
 ## Motivation
 

@@ -17,14 +17,13 @@ public class ProcessRound implements Processor<String, Round> {
     @Override
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
-        this.context = context;
+        // TODO 1 -> D: set the context
     }
 
     @Override
     public void process(String key, Round value) {
-        if(value.getGame() == StreetFighter){
-            context.forward(key, value.getWinner());
-        }
+        // TODO 1 -> E: filter result from Street Fighter
+        // TODO 1 -> F: extract the winner of this round
     }
 
     @Override

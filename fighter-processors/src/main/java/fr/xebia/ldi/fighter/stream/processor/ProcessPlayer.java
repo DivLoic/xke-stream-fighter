@@ -23,20 +23,23 @@ public class ProcessPlayer implements Processor<String, Player> {
     @Override
     @SuppressWarnings("unchecked")
     public void init(ProcessorContext context) {
-        this.context = context;
+        // TODO 3 -> B assign the context
 
-        this.arenaStore = (KeyValueStore) context.getStateStore("ARENA-STORE");
+        // TODO 3 -> C get the store ARENA-STORE from the context
+        this.arenaStore = (KeyValueStore) context.getStateStore("???");
     }
 
     @Override
     public void process(String key, Player value) {
 
-        Optional<Arena> mayBeArena = Optional.ofNullable(this.arenaStore.get(key));
+        // TODO 3 -> D fetch the store where this victory is, coming from
+        Optional<Arena> mayBeArena = null;
 
         mayBeArena.ifPresent(arena -> {
 
                     Victory victory = new Victory(value, arena);
 
+                    // {"concept": ..., "character": ... }
                     GenericRecord victoryKey = groupedDataKey(victory);
 
                     this.context.forward(victoryKey, victory);

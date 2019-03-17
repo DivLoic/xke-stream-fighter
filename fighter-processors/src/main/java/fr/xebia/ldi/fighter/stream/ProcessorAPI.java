@@ -63,48 +63,57 @@ public class ProcessorAPI {
         SpecificAvroSerde<Victory> victorySerde = new SpecificAvroSerde<>();
         victorySerde.configure(props, false);
 
-        StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
+        /*StoreBuilder<WindowStore<GenericRecord, Long>> victoriesStoreBuilder = Stores.windowStoreBuilder(
                 Stores.persistentWindowStore("VICTORIES-STORE", Duration.ofSeconds(15), Duration.ofSeconds(2), false),
                 keyAvroSerde,
                 Serdes.Long()
-        );
+        );*/
 
-        StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder = Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore("ARENA-STORE"),
-                Serdes.String(),
-                arenaSerde
-        ).withLoggingDisabled();
+        // TODO 2 -> D: create the arenaStoreBuilder as ARENA-STORE
+        //StoreBuilder<KeyValueStore<String, Arena>> arenaStoreBuilder =
+        // enable logging
 
         Topology topology = new Topology();
 
-        topology.addGlobalStore(
-                arenaStoreBuilder, "GLOBAL-ARENAS",
-                Serdes.String().deserializer(), arenaSerde.deserializer(),
-                "ARENAS", "PROCESS-ARENA", ProcessGlobalArena::new);
+
+        // TODO 5 -> A turn arenaStoreBuilder to a GlobalSateStore
 
 
-        topology.addSource(LATEST, "ROUNDS-SRC", new EventTimeExtractor(),
-                        Serdes.String().deserializer(), roundSerde.deserializer(), "ROUNDS")
+        //topology
 
-                .addProcessor("PROCESS-ROUND", ProcessRound::new, "ROUNDS-SRC")
+        // TODO 1 -> A: add the ARENAS-SRC input topic as ARENAS
+        //.add
 
-                .addProcessor("PROCESS-PLAYER", ProcessPlayer::new, "PROCESS-ROUND")
+        // TODO 1 -> B: add the ROUNDS-SRC input topic as ROUNDS
+        //.add
 
-                .addSink("REPARTITION", "REPARTITIONED", keyAvroSerde.serializer(), victorySerde.serializer(), "PROCESS-PLAYER")
+        // TODO 1 -> C: add the ProcessRound as PROCESS-ROUND after ROUNDS-SRC
+        //.add
 
-                .addSource("REPARTITIONED", keyAvroSerde.deserializer(), victorySerde.deserializer(), "REPARTITIONED")
+        // TODO 2 -> A: add the ProcessArena as PROCESS-ARENA after ARENAS-SRC
+        //.add
 
-                .addProcessor("PROCESS-VICTORY", ProcessVictory::new, "REPARTITIONED")
+        // TODO 3 -> A: add the ProcessPlayer as PROCESS-PLAYER after PROCESS-ROUND
+        //.add
 
-                .addStateStore(victoriesStoreBuilder, "PROCESS-VICTORY");
+        // TODO 4 -> A: add the ProcessVictory as PROCESS-VICTORY after REPARTITIONED
+        //.add
 
-        // ~*~ presentation purpose only ~*~
+        // TODO 2 -> E: grant access to arenaStoreBuilder for PROCESS-ARENA
+        // TODO 3 -> E: grant access to arenaStoreBuilder for PROCESS-PLAYER
+
+        // TODO 4 -> E: add the victoriesStoreBuilder to the PROCESS-VICTORY processor
+        //.add
+
+        // TODO: add the final sink
+
+        /* // ~*~ presentation purpose only ~*~
         topology
                 .addSink("SINK", "RESULTS-PROC", keyAvroSerde.serializer(), valueAvroSerde.serializer(), "PROCESS-VICTORY")
 
                 .addSink("TERMINALS-COUNT", "EQUIPMENTS", Serdes.String().serializer(), Serdes.String().serializer(), "PROCESS-ARENA");
 
-        // ~*~ presentation purpose only ~*~
+        // ~*~ presentation purpose only ~*~ */
 
         Arrays.asList(
 
