@@ -84,7 +84,7 @@ public class QueryTask extends TimerTask {
             printLayout(this.outpath, QueryUtil::footer);
 
         } else {
-            logger.warn("No lines to write were found");
+            logger.debug("No lines to write were found");
         }
     }
 

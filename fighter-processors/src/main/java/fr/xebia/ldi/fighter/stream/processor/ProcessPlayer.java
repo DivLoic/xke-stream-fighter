@@ -39,7 +39,7 @@ public class ProcessPlayer implements Processor<String, Player> {
 
                     GenericRecord victoryKey = groupedDataKey(victory);
 
-                    context.forward(victoryKey, victory);
+                    this.context.forward(victoryKey, victory);
                 }
         );
     }

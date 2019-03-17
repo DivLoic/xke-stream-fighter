@@ -49,7 +49,7 @@ public class ProcessVictory implements Processor<GenericRecord, Victory> {
 
         KeyValue<GenericRecord, GenericRecord> kvDisplay = parseWindowKey(windowStart, key, total);
 
-        context.forward(kvDisplay.key, kvDisplay.value);
+        this.context.forward(kvDisplay.key, kvDisplay.value);
     }
 
     @Override

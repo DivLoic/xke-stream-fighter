@@ -17,10 +17,14 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.WindowStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Map;
 
 import static fr.xebia.ldi.fighter.entity.GameEntity.StreetFighter;
@@ -31,6 +35,8 @@ import static org.apache.kafka.streams.Topology.AutoOffsetReset.LATEST;
  * Created by loicmdivad.
  */
 public class StreamsDsl {
+
+    private static Logger logger = LoggerFactory.getLogger(ProcessorAPI.class);
 
     public static void main(String[] args){
 
@@ -78,7 +84,15 @@ public class StreamsDsl {
 
         delayProcessing(config.getLong("start-lag"));
 
-        KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), JobConfig.properties(config));
+        Topology topology = builder.build();
+
+        Arrays.asList(
+
+                topology.describe().toString().split("\n")
+
+        ).forEach( node -> logger.info(node));
+
+        KafkaStreams kafkaStreams = new KafkaStreams(topology, JobConfig.properties(config));
 
         kafkaStreams.cleanUp();
 
